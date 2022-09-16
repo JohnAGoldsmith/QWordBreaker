@@ -32,7 +32,7 @@ Q_OBJECT
     QStringList                     m_parsed_corpus_display;// this is for convenience of programmer; it is m_ParsedCorpus, where each line is "displayed" as a QString instead of the original list of Qstrings
     int                             m_NumberOfHypothesizedRunningWords;
     int                             m_NumberOfTrueRunningWords;
-    QList< QList<int> >             m_BreakPointList;
+    QList< QList<int> >             m_true_breakpoint_list;
     QList< StringCount >            m_DeletionList;// = list()  # these are the words that were nominated and then not used in any line-parses *at all*.
     Map                             m_DeletionDict;// = dict()  # They never stop getting nominated.
     QList< QPair<double,double> >   m_Break_based_RecallPrecisionHistory;// = list()
