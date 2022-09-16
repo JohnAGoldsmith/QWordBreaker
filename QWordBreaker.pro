@@ -27,8 +27,7 @@ HEADERS += \
     wordHistory.h \
     wordbreaker.h
 
-FORMS += \
-    mainwindow.ui
+
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
