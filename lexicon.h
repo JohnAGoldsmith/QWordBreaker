@@ -3,6 +3,7 @@
 //#include "wordbreaker.h"
 #include "entry.h"
 #include "mainwindow.h"
+#include "wordHistory.h"
 
 class Wordbreaker;
 
@@ -18,6 +19,7 @@ Q_OBJECT
     QMap<QString, Entry*> *         m_EntryDict;
     QList<QPair< QString, int> >  * m_EntryList;
     QMap<QString, int>              m_TrueDictionary;
+    QMap<QString, WordHistory*>     m_WordHistories;
     double                          m_DictionaryLength; // = 0   #in bits! Check this is base 2, looks like default base in python
 
     int                             m_SizeOfLongestEntry;

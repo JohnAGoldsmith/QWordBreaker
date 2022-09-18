@@ -52,8 +52,39 @@ void Lexicon::commence(){
         count = QString::number(entry->get_count());
         QTableWidgetItem* item2 = new QTableWidgetItem( count);
         widget->setItem(row,1,item2);
-        qDebug() << row << entry->get_key() << count;
+        qDebug() << "\n" << row << entry->get_key() << "Count: " << count;
         row += 1;
+
+        //WordHistory * word_history = m_WordHistories[entry->get_key()];
+        if ( m_WordHistories.contains(entry->get_key() )) {
+            WordHistory* word_history = m_WordHistories.value(entry->get_key());
+            foreach (parseTimeWindows * parse_time_window, * word_history->get_history() ){
+              QString temp;
+              foreach (timeWindow * time_window, parse_time_window->m_timeWindows){
+                    temp += QString::number(time_window->m_start) + "-" + QString::number( time_window->m_end) + "; ";
+              }
+              qDebug() << entry->get_key() << parse_time_window->m_parse + ";   " +  temp;
+            }
+        } else{
+            qDebug() << "No history " << entry->get_key();
+        }
+    }
+
+    foreach (QString real_word, m_TrueDictionary.keys()){
+        if ( ! m_WordHistories.contains(real_word) ){
+            qDebug() << "Problem!  Real world was not analyzed.";
+        } else {
+            WordHistory* word_history = m_WordHistories.value(real_word);
+            //foreach (parseTimeWindows * parse_time_window, * word_history->get_history() ){
+                //QString temp;
+                //foreach (timeWindow * time_window, parse_time_window->m_timeWindows){
+                //        temp += QString::number(time_window->m_start) + "-" + QString::number( time_window->m_end) + "; ";
+               // }
+                //qDebug() << real_word << parse_time_window->m_parse + ";   " +  temp;
+            foreach (QString line, word_history->display()){
+                qDebug() << line;
+            }
+        }
     }
 }
 
@@ -149,8 +180,11 @@ void Lexicon::read_broken_corpus(QString infilename, int numberoflines) {
     foreach (QString line, raw_corpus) {
         QString     this_line = "";
         QList<int>  breakpoint_list;
+        /*
         line = line.replace(".", " .");
         line = line.replace('?', " ?");
+        */
+
         get_original_corpus()->append(line);
         line_list = line.split(' ', QString::SkipEmptyParts);
         if ( line_list.length() <=  1 ) {
@@ -168,6 +202,7 @@ void Lexicon::read_broken_corpus(QString infilename, int numberoflines) {
             breakpoint_list.append( this_line.length() );
         }
         get_corpus()->append(this_line);
+       //qDebug() << 174 << "read broken corpus" << breakpoint_list;
 
         foreach (QString letter,   line) {
             if (! m_EntryDict->contains(letter) ) {
@@ -248,42 +283,56 @@ QList<int> convert_stringlist_to_breakpoints(QStringList * line, QList<int> & re
     return result;
 }
 QStringList find_wordstring_covering_from_wordstart_to_wordend(
-                                                   QList<int> m_true_breakpoint_list,
+                                                   QList<int> hypothesized_breakpoints,
                                                    QString line,
                                                    int word_start,
                                                    int word_end,
                                                    QStringList & result)
 {
-// find last true_breakpoint at or before word_start; call that start.
-// find first true_breakpoint at or after word_end; call that end.
-// concatenate all the words from start to end.
-    int start, end;
+// We want to see how true words were analyzed in terms of the hypothesized words.
+// We find last hypothesized_breakpoint at or before true word_start; call that start.
+// find first hypothesized_breakpoint at or after word_end; call that end.
+// concatenate all the hypothesized words from start to end.
+    int start(0), end(0);
     int i, j;
-    for (i = 0; i < m_true_breakpoint_list.length(); i++){
-        if (m_true_breakpoint_list[i] == word_start){
-            start = word_start;
+    result.clear();
+    //qDebug() << 264 << line.mid(word_start, word_end-word_start);
+    for (i = 0; i < hypothesized_breakpoints.length(); i++){
+        if (hypothesized_breakpoints[i] == word_start){
+            start = i;
+            //qDebug() << "starts well; ";
             break;
         } else {
-            if (m_true_breakpoint_list[i] > word_start){
-                start = m_true_breakpoint_list[i-1];
+            if (hypothesized_breakpoints[i] > word_start){
+                i = i-1;
+                start = i;
+                //qDebug() << "starts too early ";
                 break;
             }
         }
     }
-    for (j = i+1; j < m_true_breakpoint_list.length(); j++){
-        if (m_true_breakpoint_list[j] == word_end){
-            end = word_end;
+    //qDebug() << 273 << "start" << start;
+    for (j = i+1; j < hypothesized_breakpoints.length(); j++){
+        if (hypothesized_breakpoints[j] == word_end){
+            end = j;
+            //qDebug() << "first out";
+            break;
         } else{
-            if (m_true_breakpoint_list[j] > word_end) {
-                end = word_end;
+            if (hypothesized_breakpoints[j] > word_end) {
+                end = j;
+                //qDebug() << "second out";
                 break;
             }
         }
     }
-    for (int k = i; k < j; k++ ){
-        int length = m_true_breakpoint_list[k+1]-m_true_breakpoint_list[k];
-        result << line.mid(m_true_breakpoint_list[k], length );
+    //qDebug() << 284 << "end" << end;
+    for (int k = start; k < end; k++ ){
+        int length = hypothesized_breakpoints[k+1]-hypothesized_breakpoints[k];
+        //qDebug() << 299 << length;
+        result << line.mid(hypothesized_breakpoints[k], length );
+        //qDebug() << 301 << result.join (" ");
     }
+    //qDebug() << 303 << result.join(" ");
     return result;
 }
 void Lexicon::parse_corpus(int current_iteration) {
@@ -299,10 +348,13 @@ void Lexicon::parse_corpus(int current_iteration) {
        }
        QPair<QStringList*,double > pair;
        int lineno = 0;
+       WordHistory * word_history;
        foreach (QString line, *get_corpus()){
-           qDebug() << 303 << line;
+           //qDebug() << 303 << line;
            m_wordbreaker->m_main_window->m_progress_bar_1->setValue(lineno);
+           //...........................//
            pair = parse_word(line);
+           //...........................//
            QStringList* parsed_line (pair.first);
            double bit_cost = pair.second;
            m_ParsedCorpus.append(parsed_line);
@@ -314,31 +366,35 @@ void Lexicon::parse_corpus(int current_iteration) {
            }
            QList<int> hypothesized_breakpoint_list;
            convert_stringlist_to_breakpoints(parsed_line, hypothesized_breakpoint_list);
-           qDebug() << 317 << parsed_line;
            QList<int> breakpoint_list;
                                                 // todo make the true_breakpoint list start with zero!
            breakpoint_list << 0;
            for (int n = 0; n < m_true_breakpoint_list[lineno].length(); n++){
                breakpoint_list << m_true_breakpoint_list[lineno][n];
            }
-           qDebug() << 319 << breakpoint_list;
-           foreach (int i, breakpoint_list){
-               qDebug() << QString::number(i);
+           QStringList reconstruction;
+           for (int x = 0; x <  breakpoint_list.length()-1; x++){
+               int length = breakpoint_list[x+1] - breakpoint_list[x];
+               reconstruction << line.mid(breakpoint_list[x], length);
            }
-
            result.clear();
-
            for (int n = 1; n < breakpoint_list.length(); n++){
                 int word_start = breakpoint_list[n-1];
                 int word_end = breakpoint_list[n];
-                find_wordstring_covering_from_wordstart_to_wordend(breakpoint_list,
+                QString piece = line.mid(word_start, word_end-word_start);
+                find_wordstring_covering_from_wordstart_to_wordend(hypothesized_breakpoint_list,
                                                                    line,
                                                                    word_start,
                                                                    word_end,
                                                                    result);
-
-                qDebug() << 329 << result;
-           }
+                if (!m_WordHistories.contains(piece)){
+                    word_history = new WordHistory(piece);
+                    m_WordHistories.insert(piece, word_history);
+                } else{
+                    word_history = m_WordHistories[piece];
+                }
+                word_history->respond_to_parse_used_on_this_iteration(result, current_iteration);
+            }
            lineno++;
        }
        FilterZeroCountEntries(current_iteration);
@@ -595,13 +651,23 @@ void Lexicon::RecallPrecision(int iteration_number, int total_word_count_in_pars
 
             QString temp;
             QString this_line(m_wordbreaker->m_corpus[linenumber]);
-            qDebug() << 525 << this_line;
+            //qDebug() << 525 << this_line;
+
+
+
+
+
+
+
+
+
+
             foreach (QString piece,  *m_ParsedCorpus[linenumber]) {
                 hypothesis_line_length +=  piece.length();
                 hypothesis.append(hypothesis_line_length);
                 temp += piece + " ";
             }
-            qDebug() << 593 << temp;
+            //qDebug() << 593 << temp;
 
             QString Truth;
             Truth += "T ";
@@ -752,7 +818,7 @@ void Lexicon::RecallPrecision(int iteration_number, int total_word_count_in_pars
             float precision = float(true_positive_for_break) /  number_of_hypothesized_words;
             float recall    = float(true_positive_for_break) /  number_of_true_words;
 
-            qDebug() << "Precision" << QString::number(precision) << "Recall:" << QString::number(recall);
+            //qDebug() << "Precision" << QString::number(precision) << "Recall:" << QString::number(recall);
 
             total_true_positive_for_break += true_positive_for_break;
             total_number_of_hypothesized_words += number_of_hypothesized_words;

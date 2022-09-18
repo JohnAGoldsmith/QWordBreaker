@@ -26,17 +26,21 @@ struct parseTimeWindows{
     }
 
 };
-class wordHistory{
+class WordHistory{
     // a class of a word and all of the parses it has been given during the iterations.
     QString                              m_word;
     QList< parseTimeWindows *  >       * m_history;
     QMap<QString, parseTimeWindows * > * m_parseMap; // map from a stringified version of the parse to the parsetimeWindow
 public:
-                wordHistory(QString word) {m_word = word;}
+                WordHistory(QString word);
     void        respond_to_parse_used_on_this_iteration( QStringList, int );
     bool        test_for_contains_parse( QStringList );
     void        addTimeWindow(QStringList, timeWindow * );
     QStringList display();
+
+    QString     get_word() {return m_word;}
+    QList< parseTimeWindows *> *
+                get_history() {return m_history;}
 };
 
 
