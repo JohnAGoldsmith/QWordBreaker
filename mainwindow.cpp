@@ -47,6 +47,17 @@ MainWindow::MainWindow(QWidget *parent)
     m_splitter_1->addWidget(m_wordlist_tablewidget);
     m_wordlist_tablewidget->setSortingEnabled(false);
 
+
+    m_true_word_list_tablewidget = new QTableWidget(15,2,this);
+    m_splitter_1->addWidget(m_true_word_list_tablewidget);
+    m_true_word_list_tablewidget->setSortingEnabled(false);
+
+    m_list_tablewidget_3 = new QTableWidget(15,2,this);
+    m_splitter_1->addWidget(m_list_tablewidget_3);
+    m_list_tablewidget_3->setSortingEnabled(false);
+
+
+
     m_wordbreaker= new Wordbreaker(this);
 }
 

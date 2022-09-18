@@ -229,6 +229,9 @@ void Lexicon::read_broken_corpus(QString infilename, int numberoflines) {
     QModelIndex index1 = m_wordbreaker->m_corpus_model->index(0,0);
     QModelIndex index2 = m_wordbreaker->m_corpus_model->index(get_corpus()->length(),0);
     m_wordbreaker->m_corpus_model->emit dataChanged(index1, index2);
+    m_wordbreaker->m_main_window->m_true_word_list_tablewidget->setRowCount(m_TrueDictionary.count());
+    m_wordbreaker->m_main_window->m_true_word_list_tablewidget->setColumnCount(2);
+    put_wordlist_on_tablewidget(& m_TrueDictionary,  m_wordbreaker->m_main_window->m_true_word_list_tablewidget );
 }
 
 void Lexicon::compute_dict_frequencies(){
@@ -874,5 +877,32 @@ void Lexicon::RecallPrecision(int iteration_number, int total_word_count_in_pars
             // print            formatstring %( "Type_based Word Precision", word_precision, "recall", word_recall)
         }
         }
+
+}
+void Lexicon::put_wordlist_on_tablewidget(QMap<QString, int> * wordlist, QTableWidget* widget){
+    int row(0);
+    foreach (QString word,  wordlist->keys()){
+        QTableWidgetItem* item = new QTableWidgetItem(word);
+        widget->setItem(row,0,item);
+
+        item = new QTableWidgetItem(QString::number(wordlist->value(word)));
+        widget->setItem(row,1,item);
+
+        row++;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

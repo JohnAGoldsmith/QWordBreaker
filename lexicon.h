@@ -71,6 +71,9 @@ public:
     void        print_lexicon(QFile&);
     void        RecallPrecision(int iteration_number, int total_word_count_in_parse);
 
+    void     put_wordlist_on_tablewidget(QMap<QString, int> *, QTableWidget* );
+
+
 public slots:
     void commence();
 

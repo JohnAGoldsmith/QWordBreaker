@@ -46,6 +46,8 @@ private:
     QListView  * m_listview_2;
     //QTableView * m_wordlist_tableview;
     QTableWidget * m_wordlist_tablewidget;
+    QTableWidget * m_true_word_list_tablewidget;
+    QTableWidget * m_list_tablewidget_3;
     QSpinBox     * m_iteration_spinbox;
     QProgressBar * m_progress_bar_1;
     QProgressBar * m_progress_bar_2;
