@@ -67,6 +67,7 @@ public:
     //void            commence() {m_lexicon->open_lexicon();}
     QStringList *   get_corpus(){return & m_corpus;}
     QStringList *   get_original_corpus(){return & m_original_corpus;}
+    Lexicon *       get_lexicon() {return m_lexicon;}
 public:
     Wordbreaker(MainWindow*, QObject * parent = nullptr);
 

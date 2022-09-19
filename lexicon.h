@@ -48,10 +48,11 @@ public:
     explicit Lexicon(Wordbreaker*, QObject *parent = nullptr);
     virtual ~Lexicon() {};
 
-    QStringList * get_corpus() {return m_wordbreaker->get_corpus();}
-    QStringList * get_original_corpus() {return m_wordbreaker->get_original_corpus();}
-    QStringList * get_parsed_corpus_display() {return & m_parsed_corpus_display;}
-    QMap<QString, Entry*> * get_entry_dict() {return  m_EntryDict;}
+    QStringList                  * get_corpus() {return m_wordbreaker->get_corpus();}
+    QStringList                  * get_original_corpus() {return m_wordbreaker->get_original_corpus();}
+    QStringList                  * get_parsed_corpus_display() {return & m_parsed_corpus_display;}
+    QMap<QString, Entry*>        * get_entry_dict() {return  m_EntryDict;}
+    QMap<QString, WordHistory*>  * get_WordHistories() {return & m_WordHistories;};
     //void        open_lexicon();
     void        add_entry(StringCount);
     void        FilterZeroCountEntries(int iteration_number);

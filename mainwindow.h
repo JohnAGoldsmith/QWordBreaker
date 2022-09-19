@@ -36,6 +36,8 @@ public:
 
    // QTableView*    get_wordlist_tableview(){return m_wordlist_tableview;}
 
+
+
 private:
     Ui::MainWindow *ui;
     Wordbreaker * m_wordbreaker;
@@ -47,10 +49,12 @@ private:
     //QTableView * m_wordlist_tableview;
     QTableWidget * m_wordlist_tablewidget;
     QTableWidget * m_true_word_list_tablewidget;
-    QTableWidget * m_list_tablewidget_3;
+    QTableWidget * m_tablewidget_3;
     QSpinBox     * m_iteration_spinbox;
     QProgressBar * m_progress_bar_1;
     QProgressBar * m_progress_bar_2;
+
+    void place_word_history_in_tablewidget(); // this is triggered by user selecting a new item in the true word widget (widget 2)
 
 
 };
