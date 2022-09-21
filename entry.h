@@ -13,7 +13,11 @@ class Entry
   QString       m_key;
   int           m_count;
   double        m_frequency;
-  QList<QPair<int,int>* > m_count_register;
+  QList<QPair<int,int>* > m_count_register; // this is a pair (iteration-number, count);
+                                            // in this register, the iteration number is the first
+                                            // iteration at which this count was found.
+                                            // If the count goes up or goes down on a later iteration,
+                                            // there will be another pair in the register with that new count at that interation.
 
 public:
     Entry(QString key = "", int count =0);

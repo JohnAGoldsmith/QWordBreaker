@@ -35,7 +35,9 @@ void Lexicon::commence(){
        //qDebug() << "iteration "<< m_current_iteration;
        m_wordbreaker->m_main_window->m_progress_bar_2->setValue(m_current_iteration);
        generate_candidates(m_wordbreaker-> m_how_many_candidates_per_iteration);
+       //.....................................
        parse_corpus (m_current_iteration);
+       //.....................................
        RecallPrecision(m_current_iteration,  m_total_word_count_in_parse);
     }
 
@@ -58,21 +60,21 @@ void Lexicon::commence(){
         //WordHistory * word_history = m_WordHistories[entry->get_key()];
         if ( m_WordHistories.contains(entry->get_key() )) {
             WordHistory* word_history = m_WordHistories.value(entry->get_key());
-            foreach (parseTimeWindows * parse_time_window, * word_history->get_history() ){
+            foreach (parseTimeWindows * parse_time_window, * word_history->get_history_old() ){
               QString temp;
               foreach (timeWindow * time_window, parse_time_window->m_timeWindows){
                     temp += QString::number(time_window->m_start) + "-" + QString::number( time_window->m_end) + "; ";
               }
-              qDebug() << entry->get_key() << parse_time_window->m_parse + ";   " +  temp;
+              qDebug() << 68 << entry->get_key() << parse_time_window->m_parse + ";   " +  temp;
             }
         } else{
-            qDebug() << "No history " << entry->get_key();
+            qDebug() << 71 <<  "No history " << entry->get_key();
         }
     }
 
     foreach (QString real_word, m_TrueDictionary.keys()){
         if ( ! m_WordHistories.contains(real_word) ){
-            qDebug() << "Problem!  Real world was not analyzed.";
+            qDebug() << "Problem!  Real word was not analyzed.";
         } else {
             WordHistory* word_history = m_WordHistories.value(real_word);
             //foreach (parseTimeWindows * parse_time_window, * word_history->get_history() ){
@@ -81,8 +83,12 @@ void Lexicon::commence(){
                 //        temp += QString::number(time_window->m_start) + "-" + QString::number( time_window->m_end) + "; ";
                // }
                 //qDebug() << real_word << parse_time_window->m_parse + ";   " +  temp;
-            foreach (QString line, word_history->display()){
-                qDebug() << line;
+            if (! word_history) {
+                qDebug() << "Problem line 87" << real_word;
+            } else {
+                foreach (QString line, word_history->display()){
+                    qDebug() << 90 << line;
+                }
             }
         }
     }
@@ -180,10 +186,6 @@ void Lexicon::read_broken_corpus(QString infilename, int numberoflines) {
     foreach (QString line, raw_corpus) {
         QString     this_line = "";
         QList<int>  breakpoint_list;
-        /*
-        line = line.replace(".", " .");
-        line = line.replace('?', " ?");
-        */
 
         get_original_corpus()->append(line);
         line_list = line.split(' ', QString::SkipEmptyParts);
@@ -384,17 +386,18 @@ void Lexicon::parse_corpus(int current_iteration) {
            for (int n = 1; n < breakpoint_list.length(); n++){
                 int word_start = breakpoint_list[n-1];
                 int word_end = breakpoint_list[n];
-                QString piece = line.mid(word_start, word_end-word_start);
+                QString true_word = line.mid(word_start, word_end - word_start);
+                //qDebug() << 390 << true_word;
                 find_wordstring_covering_from_wordstart_to_wordend(hypothesized_breakpoint_list,
                                                                    line,
                                                                    word_start,
                                                                    word_end,
                                                                    result);
-                if (!m_WordHistories.contains(piece)){
-                    word_history = new WordHistory(piece);
-                    m_WordHistories.insert(piece, word_history);
+                if (!m_WordHistories.contains(true_word)){
+                    word_history = new WordHistory(true_word);
+                    m_WordHistories.insert(true_word, word_history);
                 } else{
-                    word_history = m_WordHistories[piece];
+                    word_history = m_WordHistories[true_word];
                 }
                 word_history->respond_to_parse_used_on_this_iteration(result, current_iteration);
             }
@@ -464,12 +467,6 @@ QPair<QStringList*, double> Lexicon::parse_word(QString word){
    //         # <----prefix?----><----innerscan---------->
    //         #                  <----Piece-------------->
 
-   /*
-   if (verboseflag){
-           print >>outfile, "\nOuter\tInner"
-           print >>outfile, "scan:\tscan:\tPiece\tFound?"
-    }
-    */
    for (int outerscan = 1; outerscan <= wordlength; outerscan++){
         double  MinimumCompressedSize = 0.0;
         int     startingpoint = 0;
