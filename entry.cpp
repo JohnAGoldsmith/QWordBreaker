@@ -5,12 +5,15 @@ Entry::Entry(QString key, int count)
     m_key = key;
     m_count = count;
     m_frequency = 0.0;
-
-
 }
 Entry::Entry(StringCount string_count){
     m_key = string_count.first;
     m_count = string_count.second;
+}
+Entry::~Entry(){
+    for (int n = 0; n < m_count_register.size(); n++){
+        delete m_count_register[n];
+    }
 }
 void  Entry::reset_counts(int current_iteration){
     QPair<int,int> * pair;

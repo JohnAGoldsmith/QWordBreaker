@@ -54,7 +54,7 @@ void Lexicon::commence(){
         count = QString::number(entry->get_count());
         QTableWidgetItem* item2 = new QTableWidgetItem( count);
         widget->setItem(row,1,item2);
-        qDebug() << "\n" << row << entry->get_key() << "Count: " << count;
+        //qDebug() << "\n" << row << entry->get_key() << "Count: " << count;
         row += 1;
 
         //WordHistory * word_history = m_WordHistories[entry->get_key()];
@@ -65,10 +65,10 @@ void Lexicon::commence(){
               foreach (timeWindow * time_window, parse_time_window->m_timeWindows){
                     temp += QString::number(time_window->m_start) + "-" + QString::number( time_window->m_end) + "; ";
               }
-              qDebug() << 68 << entry->get_key() << parse_time_window->m_parse + ";   " +  temp;
+              //qDebug() << 68 << entry->get_key() << parse_time_window->m_parse + ";   " +  temp;
             }
         } else{
-            qDebug() << 71 <<  "No history " << entry->get_key();
+            //qDebug() << 71 <<  "No history " << entry->get_key();
         }
     }
 
@@ -86,9 +86,9 @@ void Lexicon::commence(){
             if (! word_history) {
                 qDebug() << "Problem line 87" << real_word;
             } else {
-                foreach (QString line, word_history->display()){
-                    qDebug() << 90 << line;
-                }
+                //foreach (QString line, word_history->display()){
+                //    qDebug() << 90 << line;
+                //}
             }
         }
     }
@@ -125,6 +125,7 @@ void Lexicon::FilterZeroCountEntries(int iteration_number){
  }
 
 void Lexicon::read_corpus(QString infilename){
+    // broken, don't use it at all.
          //qDebug() <<  "Name of data file: " << infilename;
          //ui->setupUi(this);
          QString foldername;
@@ -139,15 +140,7 @@ void Lexicon::read_corpus(QString infilename){
              return;
          QByteArray bytearray = fileIn.readAll();
          //qDebug() << bytearray;
-/*
-         if not os.path.isfile(infilename):
-             print "Warning: ", infilename, " does not exist."
-         if g_encoding == "utf8":
-             infile = codecs.open(infilename, encoding = 'utf-8')`
-         else:
-             infile = open(infilename)
-         self.m_Corpus = infile.readlines() # bad code if the corpus is very large -- but then we won't use python.
- */
+
    foreach (QString line, *get_corpus()){
        Entry* entry;
         for (int i = 0; i < line.length(); i++){
@@ -344,6 +337,10 @@ void Lexicon::parse_corpus(int current_iteration) {
        m_wordbreaker->m_main_window->m_progress_bar_1->setMinimum(0);
        m_wordbreaker->m_main_window->m_progress_bar_1->setMaximum(get_corpus()->length());
        QStringList result;
+       // Memory leak: we must clean up the pointers in m_ParsedCorpus
+       foreach (QStringList * list, m_ParsedCorpus){
+            delete list;
+       }
        m_ParsedCorpus.clear();
        m_parsed_corpus_display.clear();
        m_CorpusCost = 0.0;
@@ -360,6 +357,8 @@ void Lexicon::parse_corpus(int current_iteration) {
            //...........................//
            pair = parse_word(line);
            //...........................//
+           //qDebug() << 363 << line;
+           // Note: pair.first is a pointer which we are responsible to clear
            QStringList* parsed_line (pair.first);
            double bit_cost = pair.second;
            m_ParsedCorpus.append(parsed_line);
@@ -374,6 +373,7 @@ void Lexicon::parse_corpus(int current_iteration) {
            QList<int> breakpoint_list;
                                                 // todo make the true_breakpoint list start with zero!
            breakpoint_list << 0;
+           //  qDebug() << 378 << line;
            for (int n = 0; n < m_true_breakpoint_list[lineno].length(); n++){
                breakpoint_list << m_true_breakpoint_list[lineno][n];
            }
@@ -402,7 +402,9 @@ void Lexicon::parse_corpus(int current_iteration) {
                 word_history->respond_to_parse_used_on_this_iteration(result, current_iteration);
             }
            lineno++;
+           //qDebug() << lineno;
        }
+       //qDebug() << 407;
        FilterZeroCountEntries(current_iteration);
        compute_dict_frequencies();
        compute_dictionary_length();
@@ -497,7 +499,9 @@ QPair<QStringList*, double> Lexicon::parse_word(QString word){
         }
         Parse[outerscan]->append(LastChunk);
     }
-
+    for (int n = 0; n < wordlength; n++){
+        delete Parse[n];
+    }
     bitcost = BestCompressedLength[ wordlength ];
     return QPair<QStringList*, double> (Parse[wordlength], bitcost);
 }

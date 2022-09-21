@@ -9,10 +9,10 @@ Wordbreaker::Wordbreaker(MainWindow * mainwindow, QObject * parent): QObject(par
     m_main_window = mainwindow;
 
 
-    m_numberofcycles 		= 10;
+    m_numberofcycles 		= 20;
     mainwindow->m_iteration_spinbox->setValue(m_numberofcycles);
-    m_how_many_candidates_per_iteration 	= 50;
-    m_numberoflines 		=  20000;
+    m_how_many_candidates_per_iteration 	= 100;
+    m_numberoflines 		=  100000;
     m_datadirectory 		= "../../"; //"../Dropbox/data/english-browncorpus/";            // "../../data/english-browncorpus/";
     m_corpus_filename 		= "browncorpus100lines.txt";
     m_shortoutname 			= "wordbreaker-browncorpus-100lines.txt";
