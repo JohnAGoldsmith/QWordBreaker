@@ -33,6 +33,8 @@ public:
     void        set_key (QString key) {m_key = key;}
     void        set_count(int n) {m_count = n;}
 
+    void        write_entry_to_json(QJsonObject & );
+
 };
 
 #endif // ENTRY_H

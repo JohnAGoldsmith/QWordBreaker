@@ -10,6 +10,9 @@
 #include <QtMath>
 #include <QMap>
 #include <QShortcut>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonArray>
 //#include "lexicon.h"
 #include "mainwindow.h"
 
@@ -63,6 +66,7 @@ class Wordbreaker : public QObject
     QString         m_outfile_lexicon_name;
     QString         m_outfile_RecallPrecision_name;
 
+    void            write_wordbreaker_to_json(QJsonObject &);
 public:
     //void            commence() {m_lexicon->open_lexicon();}
     QStringList *   get_corpus(){return & m_corpus;}

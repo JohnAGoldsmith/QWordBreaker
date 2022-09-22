@@ -77,21 +77,13 @@ void Lexicon::commence(){
             qDebug() << "Problem!  Real word was not analyzed.";
         } else {
             WordHistory* word_history = m_WordHistories.value(real_word);
-            //foreach (parseTimeWindows * parse_time_window, * word_history->get_history() ){
-                //QString temp;
-                //foreach (timeWindow * time_window, parse_time_window->m_timeWindows){
-                //        temp += QString::number(time_window->m_start) + "-" + QString::number( time_window->m_end) + "; ";
-               // }
-                //qDebug() << real_word << parse_time_window->m_parse + ";   " +  temp;
             if (! word_history) {
                 qDebug() << "Problem line 87" << real_word;
-            } else {
-                //foreach (QString line, word_history->display()){
-                //    qDebug() << 90 << line;
-                //}
             }
         }
     }
+    QJsonArray json_array;
+    m_wordbreaker->write_wordbreaker_to_json(json_array);
 }
 
 

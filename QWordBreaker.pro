@@ -10,6 +10,7 @@ CONFIG += c++11
 
 SOURCES += \
     entry.cpp \
+    json.cpp \
     lexicon.cpp \
     listmodel.cpp \
     main.cpp \

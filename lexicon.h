@@ -12,24 +12,18 @@ class Lexicon : public QObject
 
 Q_OBJECT
 
-    //MainWindow *                    m_main_window;
+    //MainWindow *                  m_main_window;
     Wordbreaker *                   m_wordbreaker;
     Map                             m_LetterDict;
     Map                             m_LetterPlog;
     QMap<QString, Entry*> *         m_EntryDict;
-    QList<QPair< QString, int> >  * m_EntryList;
     QMap<QString, int>              m_TrueDictionary;
     QMap<QString, WordHistory*>     m_WordHistories;
     double                          m_DictionaryLength; // = 0   #in bits! Check this is base 2, looks like default base in python
-
     int                             m_SizeOfLongestEntry;
     double                          m_CorpusCost;
     int                             m_current_iteration;
     int                             m_total_word_count_in_parse;
-//    QMap<int, double>               m_ForwardProb;
-//    QMap<int, double>               m_BackwardProb;
-
-    //QStringList                     m_corpus;
     QList<QStringList*>             m_ParsedCorpus;
     QStringList                     m_parsed_corpus_display;// this is for convenience of programmer; it is m_ParsedCorpus, where each line is "displayed" as a QString instead of the original list of Qstrings
     int                             m_NumberOfHypothesizedRunningWords;
@@ -73,6 +67,7 @@ public:
     void        RecallPrecision(int iteration_number, int total_word_count_in_parse);
 
     void     put_wordlist_on_tablewidget(QMap<QString, int> *, QTableWidget* );
+    void     write_lexicon_to_json(QJsonObject &);
 
 
 public slots:
