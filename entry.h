@@ -7,6 +7,7 @@
 #include <QPair>
 #include <QDebug>
 
+class EntryHistory;
 
 class Entry
 {
@@ -18,6 +19,7 @@ class Entry
                                             // iteration at which this count was found.
                                             // If the count goes up or goes down on a later iteration,
                                             // there will be another pair in the register with that new count at that interation.
+  EntryHistory * m_history;
 
 public:
     Entry(QString key = "", int count =0);
@@ -29,12 +31,11 @@ public:
     double      get_frequency() {return m_frequency;}
     void        increment_count (int n = 1) {m_count += n;}
     void        reset_counts(int current_iteraiton);
-    void        set_frequency(double freq) {m_frequency = freq;}
-    void        set_key (QString key) {m_key = key;}
-    void        set_count(int n) {m_count = n;}
-
-    void        write_entry_to_json(QJsonObject & );
-
+    void            set_frequency(double freq) {m_frequency = freq;}
+    void            set_key (QString key) {m_key = key;}
+    void            set_count(int n) {m_count = n;}
+    void            write_entry_to_json(QJsonObject & );
+    EntryHistory *  get_history() {return m_history;}
 };
 
 #endif // ENTRY_H

@@ -9,7 +9,7 @@ Wordbreaker::Wordbreaker(MainWindow * mainwindow, QObject * parent): QObject(par
     m_main_window = mainwindow;
 
 
-    m_numberofcycles 		= 3;
+    m_numberofcycles 		= 4;
     mainwindow->m_iteration_spinbox->setValue(m_numberofcycles);
     m_how_many_candidates_per_iteration 	= 100;
     m_numberoflines 		=  100000;
@@ -27,9 +27,9 @@ Wordbreaker::Wordbreaker(MainWindow * mainwindow, QObject * parent): QObject(par
     m_verboseflag = false;
 
     m_lexicon               = new Lexicon(this, this);
-    m_corpus_model          = new ListModel( &m_original_corpus,  this);
+    m_corpus_model          = new ListModel( &m_raw_original_corpus,  this);
     m_parsed_corpus_model   = new ListModel ( m_lexicon->get_parsed_corpus_display(), this );
-    //m_word_table_model       = nullptr;
+
 
     m_main_window->m_listview_1         ->setModel(m_corpus_model);
     m_main_window->m_listview_2         ->setModel(m_parsed_corpus_model);

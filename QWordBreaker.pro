@@ -16,6 +16,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     tablemodel.cpp \
+    word.cpp \
     wordHistory.cpp \
     wordbreaker.cpp
 
@@ -25,6 +26,7 @@ HEADERS += \
     listmodel.h \
     mainwindow.h \
     tablemodel.h \
+    word.h \
     wordHistory.h \
     wordbreaker.h
 

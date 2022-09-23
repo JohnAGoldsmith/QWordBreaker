@@ -6,6 +6,7 @@
 #include <QMap>
 
 
+
 struct timeWindow{
     // a pair of integers indicating a sequence of continguous iterations in which the parse was found at least once.
     // a timeWindow in which the m_end is zero is one which is still in the running: the parse was present on the previous iteration.
@@ -55,13 +56,14 @@ struct history_of_ParseCounts{
 class WordHistory{
     // a class of a word and all of the parses it has been given during the iterations.
     QString                                    m_word;
-    QList< history_of_ParseCounts * >        * m_history;
-    QMap<QString, history_of_ParseCounts * > * m_parseMap;     // map from a stringified version of the parse to the historicalParseCounts
+    QList< history_of_ParseCounts * >        * m_parse_list;
+    QMap<QString, history_of_ParseCounts * > * m_parse_map;     // map from a stringified version of the parse to the historicalParseCounts
 
     QList< parseTimeWindows *  >             * m_history_old;
     QMap<QString, parseTimeWindows * >       * m_parseMap_old; // map from a stringified version of the parse to the parseTimeWindows
 public:
                 WordHistory(QString word);
+                WordHistory();
     void        respond_to_parse_used_on_this_iteration( QStringList, int );
     bool        test_for_contains_parse( QStringList );
 
@@ -75,7 +77,17 @@ public:
 };
 
 
+class EntryHistory{
+    // A class to keep track of a hypothetical word's counts on each iteration
+    QString                             m_entry;
+    //QList< iteration_based_count  >     m_history;
+    QList< history_of_ParseCounts * >        * m_parse_list;
+    QMap<QString, history_of_ParseCounts * > * m_parse_map;     // map from a stringified version of the parse to the historicalParseCounts
 
+public:
+          EntryHistory(QString, int, int);
+
+};
 
 
 

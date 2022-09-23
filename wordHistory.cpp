@@ -5,9 +5,22 @@
 WordHistory::WordHistory(QString word)
 {
     m_word = word;
-    m_history = new QList< history_of_ParseCounts * >;
+    m_parse_list = new QList< history_of_ParseCounts * >;
+    m_parse_map = new QMap<QString, history_of_ParseCounts * > ;
+
+    // remove:
     m_history_old = new QList< parseTimeWindows *  >;
-    m_parseMap = new QMap<QString, history_of_ParseCounts * > ;
+    m_parseMap_old = new QMap<QString, parseTimeWindows * >;
+
+}
+WordHistory::WordHistory()
+{
+//    m_word = word;
+    m_parse_list = new QList< history_of_ParseCounts * >;
+    m_parse_map = new QMap<QString, history_of_ParseCounts * > ;
+
+    // remove:
+    m_history_old = new QList< parseTimeWindows *  >;
     m_parseMap_old = new QMap<QString, parseTimeWindows * >;
 
 }
@@ -23,14 +36,14 @@ void WordHistory::respond_to_parse_used_on_this_iteration(QStringList parse, int
     QString parse_string = parse.join(" ");
     history_of_ParseCounts * history_of_parse_counts;
     iteration_based_count * this_iteration_parse_count;
-    if ( ! m_parseMap->contains(parse_string)){
+    if ( ! m_parse_map->contains(parse_string)){
         int count = 1;
         this_iteration_parse_count = new iteration_based_count(iteration, count);
         history_of_parse_counts = new history_of_ParseCounts(parse_string, this_iteration_parse_count);
-        m_parseMap->insert(parse_string, history_of_parse_counts);
-        m_history->append(history_of_parse_counts);
+        m_parse_map->insert(parse_string, history_of_parse_counts);
+        m_parse_list->append(history_of_parse_counts);
     } else{
-        history_of_parse_counts = m_parseMap->value(parse_string);
+        history_of_parse_counts = m_parse_map->value(parse_string);
         iteration_based_count * last_iteration_count = history_of_parse_counts->m_historical_parse_counts.last();
         if (last_iteration_count->m_iteration < iteration){
             iteration_based_count * new_iteration_count = new iteration_based_count(iteration, 1);
@@ -76,7 +89,7 @@ QStringList WordHistory::display(){
     //output.clear();
     output << "second part: " +  m_word;
     int previous_count (0);
-    foreach(history_of_ParseCounts * history, * m_history){
+    foreach(history_of_ParseCounts * history, * m_parse_list){
         output.append(history->m_parse);
         foreach (iteration_based_count * count,  history->m_historical_parse_counts ){
             output.append(QString::number(count->m_iteration) + ":" + QString::number(count->m_count));

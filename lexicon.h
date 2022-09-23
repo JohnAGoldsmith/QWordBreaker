@@ -4,21 +4,28 @@
 #include "entry.h"
 #include "mainwindow.h"
 #include "wordHistory.h"
+#include "word.h"
 
+class Word;
 class Wordbreaker;
 
 class Lexicon : public QObject
 {
 
-Q_OBJECT
+    Q_OBJECT
 
-    //MainWindow *                  m_main_window;
     Wordbreaker *                   m_wordbreaker;
     Map                             m_LetterDict;
     Map                             m_LetterPlog;
     QMap<QString, Entry*> *         m_EntryDict;
-    QMap<QString, int>              m_TrueDictionary;
-    QMap<QString, WordHistory*>     m_WordHistories;
+    //QMap<QString, int>              m_TrueDictionary;
+    QMap<QString, Word*> *          m_TrueDictionary;
+
+
+    // remove these; they go inside the entries themselves
+    QMap<QString, WordHistory*>     m_EntryHistories; // for hypothesized words
+    QMap<QString, WordHistory*>     m_WordHistories;  // for true words
+
     double                          m_DictionaryLength; // = 0   #in bits! Check this is base 2, looks like default base in python
     int                             m_SizeOfLongestEntry;
     double                          m_CorpusCost;
@@ -43,7 +50,7 @@ public:
     virtual ~Lexicon() {};
 
     QStringList                  * get_corpus() {return m_wordbreaker->get_corpus();}
-    QStringList                  * get_original_corpus() {return m_wordbreaker->get_original_corpus();}
+    QStringList                  * get_original_corpus() {return m_wordbreaker->get_raw_original_corpus();}
     QStringList                  * get_parsed_corpus_display() {return & m_parsed_corpus_display;}
     QMap<QString, Entry*>        * get_entry_dict() {return  m_EntryDict;}
     QMap<QString, WordHistory*>  * get_WordHistories() {return & m_WordHistories;};
@@ -66,8 +73,8 @@ public:
     void        print_lexicon(QFile&);
     void        RecallPrecision(int iteration_number, int total_word_count_in_parse);
 
-    void     put_wordlist_on_tablewidget(QMap<QString, int> *, QTableWidget* );
-    void     write_lexicon_to_json(QJsonObject &);
+    void     put_wordlist_on_tablewidget(QMap<QString, Word* > *, QTableWidget* );
+    void     write_lexicon_to_json(QJsonArray &);
 
 
 public slots:

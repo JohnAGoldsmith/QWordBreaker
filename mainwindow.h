@@ -34,20 +34,16 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-   // QTableView*    get_wordlist_tableview(){return m_wordlist_tableview;}
-
-
 
 private:
     Ui::MainWindow *ui;
     Wordbreaker * m_wordbreaker;
     QVBoxLayout * m_layout;
-    QSplitter * m_splitter_top;
+    QSplitter   * m_splitter_top;
     QSplitter   * m_splitter_1;
-    QListView  * m_listview_1;
-    QListView  * m_listview_2;
-    //QTableView * m_wordlist_tableview;
-    QTableWidget * m_wordlist_tablewidget;
+    QListView   * m_listview_1;
+    QListView   * m_listview_2;
+    QTableWidget * m_entry_list_tablewidget;
     QTableWidget * m_true_word_list_tablewidget;
     QTableWidget * m_tablewidget_3;
     QSpinBox     * m_iteration_spinbox;

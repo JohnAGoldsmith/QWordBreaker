@@ -46,9 +46,9 @@ MainWindow::MainWindow(QWidget *parent)
     //m_wordlist_tableview = new QTableView(this);
     //m_splitter_1->addWidget(m_wordlist_tableview);
 
-    m_wordlist_tablewidget = new QTableWidget(15,2,this);
-    m_splitter_1->addWidget(m_wordlist_tablewidget);
-    m_wordlist_tablewidget->setSortingEnabled(false);
+    m_entry_list_tablewidget = new QTableWidget(15,2,this);
+    m_splitter_1->addWidget(m_entry_list_tablewidget);
+    m_entry_list_tablewidget->setSortingEnabled(false);
 
 
     m_true_word_list_tablewidget = new QTableWidget(15,2,this);

@@ -42,8 +42,8 @@ class Wordbreaker : public QObject
 
     Lexicon*        m_lexicon;
     MainWindow *    m_main_window;
-    QStringList     m_corpus;
-    QStringList     m_original_corpus;
+    QStringList     m_corpus;  // this is slightly modified during "read_broken_corpus()"; almost the same as m_raw_original_corpus.
+    QStringList     m_raw_original_corpus;
     ListModel *     m_corpus_model;
     ListModel *     m_parsed_corpus_model;
     //TableModel *    m_word_table_model;
@@ -66,11 +66,11 @@ class Wordbreaker : public QObject
     QString         m_outfile_lexicon_name;
     QString         m_outfile_RecallPrecision_name;
 
-    void            write_wordbreaker_to_json(QJsonObject &);
+    void            write_wordbreaker_to_json(QJsonArray &);
 public:
     //void            commence() {m_lexicon->open_lexicon();}
     QStringList *   get_corpus(){return & m_corpus;}
-    QStringList *   get_original_corpus(){return & m_original_corpus;}
+    QStringList *   get_raw_original_corpus(){return & m_raw_original_corpus;}
     Lexicon *       get_lexicon() {return m_lexicon;}
 public:
     Wordbreaker(MainWindow*, QObject * parent = nullptr);
