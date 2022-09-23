@@ -4,24 +4,12 @@
 #include "tablemodel.h"
 
 
-/*
-Lexicon::Lexicon(Wordbreaker * wordbreaker)
-{
-    m_wordbreaker = wordbreaker;
 
-}
-*/
 Lexicon::Lexicon(Wordbreaker* wordbreaker, QObject *parent):QObject(parent)
 {
     m_wordbreaker       = wordbreaker;
     m_EntryDict         = new  QMap<QString, Entry*> ;
     m_TrueDictionary    = new QMap<QString, Word*>;
-    //m_EntryDict       = new QMap<QString, Entry*> ;
-    //m_EntryList       = nullptr;
-
-
-
-
 }
 
 void Lexicon::commence(){
@@ -29,11 +17,8 @@ void Lexicon::commence(){
     m_total_word_count_in_parse 	= 0;
     m_wordbreaker->m_main_window->m_progress_bar_2->setMinimum(0);
     m_wordbreaker->m_main_window->m_progress_bar_2->setMaximum(m_wordbreaker->m_numberofcycles-1);
-
     read_broken_corpus(m_wordbreaker->m_corpus_filename, m_wordbreaker->m_numberoflines  );
-
     for (m_current_iteration = 1; m_current_iteration < m_wordbreaker-> m_numberofcycles; m_current_iteration++) {
-
        m_wordbreaker->m_main_window->m_progress_bar_2->setValue(m_current_iteration);
        generate_candidates(m_wordbreaker-> m_how_many_candidates_per_iteration);
        //.....................................
@@ -48,48 +33,26 @@ void Lexicon::commence(){
      widget->setRowCount(m_EntryDict->count()    );
 
      int row = 0;
-     foreach (Entry* entry, m_EntryDict->values()){
-        QTableWidgetItem* item = new QTableWidgetItem(entry->get_key());
+     QMapIterator<QString, Entry*> iter(* m_EntryDict);
+     while(iter.hasNext()){
+         iter.next();
+        QTableWidgetItem* item = new QTableWidgetItem(iter.key());
         widget->setItem(row,0,item);
-        QString  count  = QString::number(row);
-        count = QString::number(entry->get_count());
+        QString count = QString::number(iter.value()->get_count());
         QTableWidgetItem* item2 = new QTableWidgetItem( count);
         widget->setItem(row,1,item2);       
         row += 1;
-
-
-        /*
-        EntryHistory* entry_history =  entry->get_history();
-        foreach (parseTimeWindows * parse_time_window, * entry_history-> get_history_old() ){
-              QString temp;
-              foreach (timeWindow * time_window, parse_time_window->m_timeWindows){
-                    temp += QString::number(time_window->m_start) + "-" + QString::number( time_window->m_end) + "; ";
-              }
-              //qDebug() << 68 << entry->get_key() << parse_time_window->m_parse + ";   " +  temp;
-        }
-
-
-        // remove:
-        if ( m_WordHistories.contains(entry->get_key() )) {
-            WordHistory* word_history = m_WordHistories.value(entry->get_key());
-            foreach (parseTimeWindows * parse_time_window, * word_history->get_history_old() ){
-              QString temp;
-              foreach (timeWindow * time_window, parse_time_window->m_timeWindows){
-                    temp += QString::number(time_window->m_start) + "-" + QString::number( time_window->m_end) + "; ";
-              }
-              //qDebug() << 68 << entry->get_key() << parse_time_window->m_parse + ";   " +  temp;
-            }
-        }
-        */
     }
 
-    foreach (QString real_word, m_TrueDictionary->keys()){
-        if ( ! m_WordHistories.contains(real_word) ){
-            qDebug() << "Problem!  Real word was not analyzed.";
-        } else {
-            WordHistory* word_history = m_WordHistories.value(real_word);
-            if (! word_history) {
-                qDebug() << "Problem line 87" << real_word;
+    if (false) {
+        foreach (QString real_word, m_TrueDictionary->keys()){
+            if ( ! m_WordHistories.contains(real_word) ){
+                qDebug() << "Problem!  Real word was not analyzed.";
+            } else {
+                WordHistory* word_history = m_WordHistories.value(real_word);
+                if (! word_history) {
+                    qDebug() << "Problem line 87" << real_word;
+                }
             }
         }
     }
@@ -116,7 +79,6 @@ void Lexicon::FilterZeroCountEntries(int iteration_number){
             m_DeletionList.append(StringCount(key,iteration_number));
             m_DeletionDict[key] = 1;
             TempDeletionMap[key] = entry;
-            //qDebug() << "Excluding this bad candidate"<< key;
         }
     }
     foreach (QString key, TempDeletionMap.keys()){
@@ -129,8 +91,6 @@ void Lexicon::FilterZeroCountEntries(int iteration_number){
 
 void Lexicon::read_corpus(QString infilename){
     // broken, don't use it at all.
-         //qDebug() <<  "Name of data file: " << infilename;
-         //ui->setupUi(this);
          QString foldername;
          if (false &&  infilename.isEmpty()){
              infilename= QFileDialog::getOpenFileName(m_wordbreaker->m_main_window, "Choose File", "/home/jagoldsm/Dropbox/data/english-browncorpus", "text files (*.txt)");
@@ -163,11 +123,11 @@ void Lexicon::read_corpus(QString infilename){
 void Lexicon::read_broken_corpus(QString infilename, int numberoflines) {
     QStringList original_raw_corpus;
     infilename= QFileDialog::getOpenFileName(m_wordbreaker->m_main_window, "Choose File", "/home/jagoldsm/Dropbox/data/english-browncorpus", "text files (*.txt)");
-    qDebug() << "Name of data file: " << m_wordbreaker->m_corpus_filename ;
     QFile fileIn(infilename);
     if (!fileIn.open(QIODevice::ReadWrite | QIODevice::Text))
         return;
     QTextStream in(&fileIn);
+
     // ------------------  read file -------------------------------//
     while(!in.atEnd()) {
         QString line = in.readLine();
@@ -197,6 +157,7 @@ void Lexicon::read_broken_corpus(QString infilename, int numberoflines) {
             breakpoint_list.append( this_line.length() );            
         }
         get_corpus()->append(this_line);
+        // add letters to form the initial set of entries...
         foreach (QString letter,   line) {
             if (! m_EntryDict->contains(letter) ) {
                 Entry* this_entry = new Entry(letter, 1);
@@ -204,14 +165,6 @@ void Lexicon::read_broken_corpus(QString infilename, int numberoflines) {
             } else {
                 m_EntryDict->value(letter)->increment_count(1);
             }
-            // *****************************************************************************
-            // I think this is used nowhere -- get rid of it:
-            if (! m_LetterDict.contains(letter) ){
-                m_LetterDict[letter] =  1.0 ;
-            }else{
-                m_LetterDict[letter] += 1.0;
-            }
-            // *****************************************************************************
         }
         m_true_breakpoint_list.append(breakpoint_list);
         if (numberoflines > 0 and  get_corpus()->length() > numberoflines){
@@ -295,43 +248,33 @@ QStringList find_wordstring_covering_from_wordstart_to_wordend(
     int start(0), end(0);
     int i, j;
     result.clear();
-    //qDebug() << 264 << line.mid(word_start, word_end-word_start);
     for (i = 0; i < hypothesized_breakpoints.length(); i++){
         if (hypothesized_breakpoints[i] == word_start){
             start = i;
-            //qDebug() << "starts well; ";
             break;
         } else {
             if (hypothesized_breakpoints[i] > word_start){
                 i = i-1;
                 start = i;
-                //qDebug() << "starts too early ";
                 break;
             }
         }
     }
-    //qDebug() << 273 << "start" << start;
     for (j = i+1; j < hypothesized_breakpoints.length(); j++){
         if (hypothesized_breakpoints[j] == word_end){
             end = j;
-            //qDebug() << "first out";
             break;
         } else{
             if (hypothesized_breakpoints[j] > word_end) {
                 end = j;
-                //qDebug() << "second out";
                 break;
             }
         }
     }
-    //qDebug() << 284 << "end" << end;
     for (int k = start; k < end; k++ ){
         int length = hypothesized_breakpoints[k+1]-hypothesized_breakpoints[k];
-        //qDebug() << 299 << length;
         result << line.mid(hypothesized_breakpoints[k], length );
-        //qDebug() << 301 << result.join (" ");
     }
-    //qDebug() << 303 << result.join(" ");
     return result;
 }
 void Lexicon::parse_corpus(int current_iteration) {
@@ -346,9 +289,13 @@ void Lexicon::parse_corpus(int current_iteration) {
        m_parsed_corpus_display.clear();
        m_CorpusCost = 0.0;
        m_NumberOfHypothesizedRunningWords = 0;
-       foreach(Entry* entry, m_EntryDict->values() ){
-           entry->reset_counts(current_iteration);
+
+       QMapIterator<QString, Entry*> iter(* m_EntryDict);
+       while (iter.hasNext() ){
+           iter.next();
+           iter.value()->reset_counts(current_iteration);
        }
+
        QPair<QStringList*,double > pair;
        int lineno = 0;
        WordHistory * word_history;
@@ -383,7 +330,6 @@ void Lexicon::parse_corpus(int current_iteration) {
            QList<int> true_breakpoint_list;
                                                               // todo make the true_breakpoint list start with zero!
            true_breakpoint_list << 0;
-           //  qDebug() << 378 << line;
            for (int n = 0; n < m_true_breakpoint_list[lineno].length(); n++){
                true_breakpoint_list << m_true_breakpoint_list[lineno][n];
            }
@@ -405,14 +351,17 @@ void Lexicon::parse_corpus(int current_iteration) {
                 p_word->get_history()->respond_to_parse_used_on_this_iteration(result, current_iteration);
 
 
-                // remove:
-                if (!m_WordHistories.contains(true_word)){
-                    word_history = new WordHistory(true_word);
-                    m_WordHistories.insert(true_word, word_history);
-                } else{
-                    word_history = m_WordHistories[true_word];
+
+                 // remove?
+                if (false) {
+                    if (!m_WordHistories.contains(true_word)){
+                        word_history = new WordHistory(true_word);
+                        m_WordHistories.insert(true_word, word_history);
+                    } else{
+                        word_history = m_WordHistories[true_word];
+                    }
+                    word_history->respond_to_parse_used_on_this_iteration(result, current_iteration);
                 }
-                word_history->respond_to_parse_used_on_this_iteration(result, current_iteration);
                 //...................................................................................... }
             }
            lineno++;
@@ -425,34 +374,6 @@ void Lexicon::parse_corpus(int current_iteration) {
        QModelIndex index2 = m_wordbreaker->m_parsed_corpus_model->index(get_parsed_corpus_display()->length(),0);
        m_wordbreaker->m_parsed_corpus_model->emit dataChanged(index1, index2);
 
-       //if (m_wordbreaker->m_word_table_model) {delete m_wordbreaker->m_word_table_model;}
-       //m_wordbreaker->m_word_table_model = new TableModel(& m_EntryDict);
-       //m_wordbreaker->m_main_window->get_wordlist_tableview()->setModel(m_wordbreaker->m_word_table_model);
-
-
-        /*
-        foreach (QString word, m_EntryDict->keys()){
-            QTableWidgetItem* item = new QTableWidgetItem(word);
-            widget->setItem(row,0,item);
-            QTableWidgetItem* item2 = new QTableWidgetItem(QString::number(m_EntryDict->value(word)->get_count()));
-            widget->setItem(row,1,item2);
-            row += 1;
-        }
-        */
-       /*
-       m_EntryList = new QList<QPair<QString, int> >;
-       foreach (QString word, m_EntryDict->keys()){
-           m_EntryList->append(QPair <QString, int>(word,  m_EntryDict->value(word)->get_count() ) ) ;
-       }
-       if (!m_wordbreaker->m_word_table_model) {
-           m_wordbreaker->m_word_table_model = new TableModel(m_EntryList);
-       }  else{
-            m_wordbreaker->m_word_table_model->refresh_list(m_EntryList);
-       }
-       //m_wordbreaker->m_word_table_model->refresh_1(m_EntryDict);
-    m_wordbreaker->m_main_window->m_wordlist_tableview ->setModel(m_wordbreaker->m_word_table_model);
-    m_wordbreaker->m_word_table_model->refresh_list(m_EntryList);
-    */
 }
 
 void Lexicon::PrintParsedCorpus(QString outfile){
