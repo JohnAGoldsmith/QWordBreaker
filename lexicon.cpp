@@ -479,9 +479,7 @@ QList<StringCount> Lexicon::generate_candidates(int how_many){
     latex_data.append(QString("piece   count   status"));
     foreach(StringCount nominee, NomineeList ){
         add_entry(nominee);
-        //qDebug() << 541 << nominee.first;
     }
-    //MakeLatexTable(latex_data,outfile);
     compute_dict_frequencies();
     return NomineeList;
 }
