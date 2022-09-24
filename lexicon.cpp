@@ -1,6 +1,7 @@
 ﻿#include "lexicon.h"
 #include "wordbreaker.h"
 #include <QFileDialog>
+
 #include "tablemodel.h"
 
 
@@ -10,6 +11,7 @@ Lexicon::Lexicon(Wordbreaker* wordbreaker, QObject *parent):QObject(parent)
     m_wordbreaker       = wordbreaker;
     m_EntryDict         = new  QMap<QString, Entry*> ;
     m_TrueDictionary    = new QMap<QString, Word*>;
+    m_Limbo             = new QMap<QString, Entry*>;
 }
 
 void Lexicon::commence(){
@@ -56,8 +58,8 @@ void Lexicon::commence(){
             }
         }
     }
-    QJsonArray json_array;
-    m_wordbreaker->write_wordbreaker_to_json(json_array);
+    QJsonObject json_object;
+    m_wordbreaker->write_wordbreaker_to_json(json_object);
 }
 
 
@@ -74,19 +76,28 @@ void Lexicon::FilterZeroCountEntries(int iteration_number){
     QMap<QString, Entry*> TempDeletionMap;
     foreach(QString key, m_EntryDict->keys()){
         if (key.length() == 1) {continue;}
+        QMapIterator<QString, Entry*> iter(*m_EntryDict);
         Entry* entry = m_EntryDict->value(key);
         if (entry->get_count() == 0){
-            m_DeletionList.append(StringCount(key,iteration_number));
-            m_DeletionDict[key] = 1;
-            TempDeletionMap[key] = entry;
+            qDebug() << 82 << "iteration" << iteration_number << key << "size" << m_Limbo->count();
+            m_Limbo->insert (key, m_EntryDict->value(key));
+            if (m_EntryDict->contains(key) &&
+                    m_EntryDict->value(key) ) {
+                m_EntryDict->remove(key);
+            }
+            //m_DeletionList.append(StringCount(key,iteration_number));
+            //m_DeletionDict[key] = 1;
+            //TempDeletionMap[key] = entry;
         }
     }
+    /*
     foreach (QString key, TempDeletionMap.keys()){
         m_EntryDict->remove(key);
         if (TempDeletionMap.contains(key)){
             delete TempDeletionMap[key];
         }
     }
+    */
  }
 
 void Lexicon::read_corpus(QString infilename){
@@ -290,11 +301,25 @@ void Lexicon::parse_corpus(int current_iteration) {
        m_CorpusCost = 0.0;
        m_NumberOfHypothesizedRunningWords = 0;
 
-       QMapIterator<QString, Entry*> iter(* m_EntryDict);
-       while (iter.hasNext() ){
-           iter.next();
-           iter.value()->reset_counts(current_iteration);
+
+       if(false){
+           QMapIterator<QString, Entry*> iter(* m_EntryDict);
+           if (current_iteration > 0){
+               while (iter.hasNext() ){
+                   iter.next();
+                   iter.value()->reset_counts(current_iteration);
+               }
+           }
        }
+
+       if(true){
+           QMapIterator<QString, Entry*> iter(* m_EntryDict);
+           while (iter.hasNext() ){
+                   iter.next();
+                   iter.value()->set_count(0);
+           }
+        }
+
 
        QPair<QStringList*,double > pair;
        int lineno = 0;
@@ -365,10 +390,34 @@ void Lexicon::parse_corpus(int current_iteration) {
                 //...................................................................................... }
             }
            lineno++;
-       }
+       } // end of analyzing one particular line
+
+
+        // This isn't quite right for reporting purposes: we need to know what the previous analyses were...
        FilterZeroCountEntries(current_iteration);
+
        compute_dict_frequencies();
        compute_dictionary_length();
+
+       if (true){
+       QMapIterator<QString, Entry*> iter(* m_EntryDict);
+       while (iter.hasNext()){
+           iter.next();
+           iter.value()->place_count_in_history(current_iteration);
+       }
+       }
+
+       if(false){
+           QMapIterator<QString, Entry*> iter(* m_EntryDict);
+           if (current_iteration > 0){
+               while (iter.hasNext() ){
+                   iter.next();
+                   iter.value()->reset_counts(current_iteration);
+               }
+           }
+       }
+
+
 
        QModelIndex index1 = m_wordbreaker->m_parsed_corpus_model->index(0,0);
        QModelIndex index2 = m_wordbreaker->m_parsed_corpus_model->index(get_parsed_corpus_display()->length(),0);
@@ -445,12 +494,15 @@ QList<StringCount> Lexicon::generate_candidates(int how_many){
     Map NomineesMap;
     QList<StringCount> NomineeCountList;
     QList<StringCount> NomineeList;
+    int repeat_candidate_count(0);
 
     foreach(QStringList* parsed_line,  m_ParsedCorpus){
         for(int wordno = 0; wordno < parsed_line->length()-1; wordno++){
             QString candidate = parsed_line->at(wordno) + parsed_line->at(wordno + 1);
             if  ( m_EntryDict->contains(candidate) ) {
-                continue;
+                  if (m_EntryDict->contains(candidate)) {
+                        continue;
+                  }
             }
             if (NomineesMap.contains(candidate)){
                 NomineesMap[candidate] += 1;
@@ -466,6 +518,7 @@ QList<StringCount> Lexicon::generate_candidates(int how_many){
     }
     std::sort (NomineeCountList.begin(), NomineeCountList.end(), myLessThan);
     foreach (StringCount nominee, NomineeCountList){
+        // currently nothing goes into m_DeletionDict !
         if (m_DeletionDict.contains(nominee.first)) {
             continue;
         }
@@ -476,7 +529,6 @@ QList<StringCount> Lexicon::generate_candidates(int how_many){
     }
 
     QStringList latex_data;
-    latex_data.append(QString("piece   count   status"));
     foreach(StringCount nominee, NomineeList ){
         add_entry(nominee);
     }

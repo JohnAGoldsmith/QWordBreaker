@@ -76,11 +76,13 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::place_word_history_in_tablewidget(){
-    QString word;
+    QString word_text;
     m_tablewidget_3->clear();
     QTableWidgetItem * item = m_true_word_list_tablewidget->selectedItems().first();
-    word = item->text();
-    WordHistory* word_history = m_wordbreaker->get_lexicon()->get_WordHistories()->value(word);
+    word_text = item->text();
+
+    Word * word = m_wordbreaker->get_lexicon() ->get_TrueDictionary()->value(word_text);
+    WordHistory* word_history = word->get_history();
     int row_count = word_history->display().length();
     m_tablewidget_3->setRowCount(row_count);
     for (auto rowno =0; rowno < row_count; rowno++) {

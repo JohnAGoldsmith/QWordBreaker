@@ -1,4 +1,6 @@
 #include "entry.h"
+#include "wordbreaker.h"
+#include "wordHistory.h"
 
 Entry::Entry(QString key, int count)
 {
@@ -11,30 +13,41 @@ Entry::Entry(StringCount string_count){
     m_count = string_count.second;
 }
 Entry::~Entry(){
-    for (int n = 0; n < m_count_register.size(); n++){
-        delete m_count_register[n];
+    for (int n = 0; n < m_history.size(); n++){
+        delete m_history[n];
     }
 }
+void Entry::place_count_in_history(int iteration){
+    if (iteration > 1){
+        if (m_history.size() >= 1){
+            if (m_history.last()->m_count == m_count){
+                return;
+            }
+        }
+    }
+    iteration_based_count * this_count = new iteration_based_count (iteration, m_count);
+    m_history.append(this_count);
+}
 void  Entry::reset_counts(int current_iteration){
-    QPair<int,int> * pair;
-    if (m_count_register.length() > 0 ){
-        int last_count = (*m_count_register.last()).second;
+    iteration_based_count * pair;
+    if (m_history.length() > 0 ){
+        int last_count = (*m_history.last()).m_count;
         if (m_count != last_count){
-            pair = new QPair<int,int>(current_iteration-1, m_count);
-            m_count_register.append(pair);
+            pair = new iteration_based_count(current_iteration-1, m_count);
+            m_history.append(pair);
         }
     }
     else{
-        pair = new QPair<int,int>(current_iteration , m_count);
-        m_count_register.append( pair);
+        pair = new  iteration_based_count(current_iteration , m_count);
+        m_history.append( pair);
     }
     m_count = 0;
 }
 
 
 void Entry::display(int iteration_number, QFile outfile){
-    QPair<int,int> * pair;
-     foreach ( pair, m_count_register) {
+    iteration_based_count * pair;
+     foreach ( pair, m_history) {
          qDebug()   <<   iteration_number << m_count;
      }
 }

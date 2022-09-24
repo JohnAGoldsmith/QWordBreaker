@@ -18,9 +18,8 @@ class Lexicon : public QObject
     Map                             m_LetterDict;
     Map                             m_LetterPlog;
     QMap<QString, Entry*> *         m_EntryDict;
-    //QMap<QString, int>              m_TrueDictionary;
     QMap<QString, Word*> *          m_TrueDictionary;
-
+    QMap<QString, Entry*> *         m_Limbo; // all Entries that have been removed because of zero counts.`
 
     // remove these; they go inside the entries themselves
     QMap<QString, WordHistory*>     m_EntryHistories; // for hypothesized words
@@ -62,6 +61,7 @@ public:
     void        compute_dict_frequencies();
     void        compute_dictionary_length();
     Wordbreaker* get_wordbreaker() {return m_wordbreaker;}
+    QMap<QString, Word*> *          get_TrueDictionary() {return m_TrueDictionary;}
     void                            parse_corpus( int  );
     QPair<QStringList*,double >     parse_word(QString word );
     void                            PrintParsedCorpus(QString filenameout);
@@ -74,7 +74,7 @@ public:
     void        RecallPrecision(int iteration_number, int total_word_count_in_parse);
 
     void     put_wordlist_on_tablewidget(QMap<QString, Word* > *, QTableWidget* );
-    void     write_lexicon_to_json(QJsonArray &);
+    void     write_lexicon_to_json(QJsonObject &);
 
 
 public slots:
