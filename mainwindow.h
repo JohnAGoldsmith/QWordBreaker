@@ -9,11 +9,13 @@
 #include <QTableView>
 #include <QTableWidget>
 #include <QAbstractTableModel>
+#include <QtCharts>
 #include "listmodel.h"
 
 class Lexicon;
 class Wordbreaker;
 class QSpinBox;
+class Entry;
 
 typedef QMap<QString, double> Map;
 typedef QPair<QString, int> StringCount;
@@ -34,11 +36,18 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void        show_selected_entry_on_graph();
 
 private:
     Ui::MainWindow *ui;
     Wordbreaker * m_wordbreaker;
     QVBoxLayout * m_layout;
+
+    QChart      * m_chart;
+    QChartView  * m_chart_view;
+    QGraphicsScene * m_chart_scene;
+    QGraphicsView * m_graphics_view;
+
     QSplitter   * m_splitter_top;
     QSplitter   * m_splitter_1;
     QListView   * m_listview_1;

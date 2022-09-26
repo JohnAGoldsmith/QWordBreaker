@@ -35,13 +35,16 @@ public:
     QString     get_key() {return m_key;}
     double      get_frequency() {return m_frequency;}
     void        increment_count (int n = 1) {m_count += n;}
-    void        reset_counts(int current_iteraiton);
+    void        reset_counts(int current_iteration);
+    void            read_json(QJsonObject);
     void            set_frequency(double freq) {m_frequency = freq;}
     void            set_key (QString key) {m_key = key;}
     void            set_count(int n) {m_count = n;}
     void            write_entry_to_json(QJsonObject & );
+    void            read_entry_from_json(QJsonObject &);
     QList<iteration_based_count * > *  get_history() {return & m_history;}
     void            place_count_in_history(int iteration);
+
 };
 
 #endif // ENTRY_H

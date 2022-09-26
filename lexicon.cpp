@@ -61,7 +61,13 @@ void Lexicon::commence(){
     QJsonObject json_object;
     m_wordbreaker->write_wordbreaker_to_json(json_object);
 }
-
+void Lexicon::add_entry(Entry* entry)
+{
+    m_EntryDict->insert(entry->get_key(), entry);
+    if (entry->get_key().length() > m_SizeOfLongestEntry){
+        m_SizeOfLongestEntry = entry->get_key().length();
+    }
+}
 
 void Lexicon::add_entry(StringCount string_count){
     Entry* entry = new Entry(string_count);

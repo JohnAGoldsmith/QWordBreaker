@@ -55,6 +55,7 @@ public:
     QMap<QString, WordHistory*>  * get_WordHistories() {return & m_WordHistories;};
     //void        open_lexicon();
     void        add_entry(StringCount);
+    void        add_entry(Entry*);
     void        FilterZeroCountEntries(int iteration_number);
     void        read_corpus(QString infile_name);
     void        read_broken_corpus(QString infile_name, int numberoflines = 100);
@@ -75,6 +76,7 @@ public:
 
     void     put_wordlist_on_tablewidget(QMap<QString, Word* > *, QTableWidget* );
     void     write_lexicon_to_json(QJsonObject &);
+    void     read_entries_from_json(QJsonObject & json_object);
 
 
 public slots:
