@@ -49,8 +49,10 @@ class Wordbreaker : public QObject
     //TableModel *    m_word_table_model;
 
     QShortcut *     m_keyCtrlA; // start program
-
-
+    QShortcut *     m_keyCtrlJ; // open json file
+    QShortcut *     m_keyCtrlO; // open text file
+    QShortcut *     m_keyCtrlQ; // quit
+    QShortcut *     m_keyCtrlS; // save json file
 
     //QString       g_encoding 			= "utf8";
     int             m_numberofcycles;
@@ -66,8 +68,13 @@ class Wordbreaker : public QObject
     QString         m_outfile_lexicon_name;
     QString         m_outfile_RecallPrecision_name;
 
-    void            write_wordbreaker_to_json(QJsonObject &);
-    void            read_json(QString filename);
+    //void            write_wordbreaker_to_json(QString filename = QString());
+public slots:
+    void            write_wordbreaker_to_json(QString);
+    void            write_wordbreaker_to_json_ask_for_filename();
+    void            read_json();
+
+
 public:
     //void            commence() {m_lexicon->open_lexicon();}
     QStringList *   get_corpus(){return & m_corpus;}

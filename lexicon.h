@@ -56,6 +56,7 @@ public:
     //void        open_lexicon();
     void        add_entry(StringCount);
     void        add_entry(Entry*);
+    void        add_word(Word*);
     void        FilterZeroCountEntries(int iteration_number);
     void        read_corpus(QString infile_name);
     void        read_broken_corpus(QString infile_name, int numberoflines = 100);
@@ -74,13 +75,19 @@ public:
     void        print_lexicon(QFile&);
     void        RecallPrecision(int iteration_number, int total_word_count_in_parse);
 
-    void     put_wordlist_on_tablewidget(QMap<QString, Word* > *, QTableWidget* );
-    void     write_lexicon_to_json(QJsonObject &);
+    //void     put_wordlist_on_tablewidget(QMap<QString, Word* > *, QTableWidget* );
+    void     put_wordlist_on_tablewidget(QTableWidget* );
+
+    void     write_lexicon_to_json(QJsonObject & json_object);
     void     read_entries_from_json(QJsonObject & json_object);
+    void     read_words_from_json(QJsonObject & words);
 
 
 public slots:
     void commence();
+
+    void quit();
+    //void save_file();
 
 
 

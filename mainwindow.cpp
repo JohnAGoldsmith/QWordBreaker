@@ -103,7 +103,25 @@ MainWindow::~MainWindow()
 {
     //delete ui;
 }
+void MainWindow::place_entrydict_on_table_widget( QMap<QString, Entry*> * entry_dict){
+    QTableWidget * widget = m_entry_list_tablewidget;
+    widget->clear();
+    widget->setColumnCount(2);
+    widget->setRowCount(entry_dict->count()    );
 
+    int row = 0;
+    QMapIterator<QString, Entry*> iter(* entry_dict);
+    while(iter.hasNext()){
+        iter.next();
+       QTableWidgetItem* item = new QTableWidgetItem(iter.key());
+       widget->setItem(row,0,item);
+       QString count = QString::number(iter.value()->get_count());
+       QTableWidgetItem* item2 = new QTableWidgetItem( count);
+       widget->setItem(row,1,item2);
+       row += 1;
+   }
+
+}
 void MainWindow::place_word_history_in_tablewidget( ){
 
     m_tablewidget_3->clear();

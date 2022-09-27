@@ -60,7 +60,7 @@ private:
     QProgressBar * m_progress_bar_2;
 
     void place_word_history_in_tablewidget(); // this is triggered by user selecting a new item in the true word widget (widget 2)
-
+    void place_entrydict_on_table_widget(QMap<QString, Entry*> * );
 
 };
 #endif // MAINWINDOW_H

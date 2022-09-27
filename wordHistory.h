@@ -47,6 +47,10 @@ struct history_of_ParseCounts{
         m_parse = parse;
         m_historical_parse_counts.append(this_iteration_count);
     }
+    history_of_ParseCounts(QString parse){
+        m_parse = parse;
+    }
+
     void add_an_iteration_and_count_to_parse(int iteration, int count){
         iteration_based_count * this_iteration_count = new iteration_based_count (iteration, count);
         m_historical_parse_counts.append(this_iteration_count);
@@ -70,10 +74,12 @@ public:
     //remove this:
     void        addTimeWindow(QStringList, timeWindow * );
 
-    QStringList                         display();
+    QStringList                          display();
     QString                              get_word() {return m_word;}
+    QList<history_of_ParseCounts*>   *   get_parse_list() {return m_parse_list;}
     QList< parseTimeWindows *>       *   get_history_old() {return m_history_old;}
     //QList< history_of_ParseCounts* >  *   get_history() {return m_history;}
+    void                                add_history_of_parse_counts(history_of_ParseCounts*);
 };
 
 

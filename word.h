@@ -8,8 +8,10 @@ public:
                             Word(QString, int count = 1);
     WordHistory*            get_history() {return m_history;}
     int                     get_count() {return m_count;}
+    QString                 get_key() {return m_key;}
     void                    increment_count (int n = 1) {m_count += n;}
     void                    write_word_to_json(QJsonObject &);
+    void                    read_word_from_json(QJsonObject &);
 
 private:
     QString                 m_key;

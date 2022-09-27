@@ -38,8 +38,23 @@ Wordbreaker::Wordbreaker(MainWindow * mainwindow, QObject * parent): QObject(par
     m_keyCtrlA = new QShortcut(mainwindow);
     m_keyCtrlA->setKey(Qt::CTRL + Qt::Key_A);
 
-    connect( m_keyCtrlA,  SIGNAL( activated()), m_lexicon,  SLOT( commence() ) ) ;
+    m_keyCtrlJ = new QShortcut(mainwindow);
+    m_keyCtrlJ->setKey(Qt::CTRL + Qt::Key_J);
 
+    m_keyCtrlO = new QShortcut(mainwindow);
+    m_keyCtrlO->setKey(Qt::CTRL + Qt::Key_O);
 
+    m_keyCtrlQ = new QShortcut(mainwindow);
+    m_keyCtrlQ->setKey(Qt::CTRL + Qt::Key_Q);
+
+    m_keyCtrlS = new QShortcut(mainwindow);
+    m_keyCtrlS->setKey(Qt::CTRL + Qt::Key_S);
+
+    connect( m_keyCtrlA,  &QShortcut::activated, m_lexicon,  &Lexicon::commence );
+    connect( m_keyCtrlJ,  &QShortcut::activated,   this,    &Wordbreaker::read_json );
+    connect( m_keyCtrlO,  &QShortcut::activated,   this,    &Wordbreaker::read_json );
+
+    connect( m_keyCtrlQ,  &QShortcut::activated, m_lexicon,  &Lexicon::quit  );
+    connect( m_keyCtrlS,  &QShortcut::activated, this,  &Wordbreaker::write_wordbreaker_to_json_ask_for_filename );
 }
 

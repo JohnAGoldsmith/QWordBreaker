@@ -29,22 +29,8 @@ void Lexicon::commence(){
        RecallPrecision(m_current_iteration,  m_total_word_count_in_parse);
      }
 
-     QTableWidget * widget =  m_wordbreaker->m_main_window->m_entry_list_tablewidget;
-     widget->clear();
-     widget->setColumnCount(2);
-     widget->setRowCount(m_EntryDict->count()    );
+    m_wordbreaker->m_main_window->place_entrydict_on_table_widget(m_EntryDict);
 
-     int row = 0;
-     QMapIterator<QString, Entry*> iter(* m_EntryDict);
-     while(iter.hasNext()){
-         iter.next();
-        QTableWidgetItem* item = new QTableWidgetItem(iter.key());
-        widget->setItem(row,0,item);
-        QString count = QString::number(iter.value()->get_count());
-        QTableWidgetItem* item2 = new QTableWidgetItem( count);
-        widget->setItem(row,1,item2);       
-        row += 1;
-    }
 
     if (false) {
         foreach (QString real_word, m_TrueDictionary->keys()){
@@ -58,8 +44,7 @@ void Lexicon::commence(){
             }
         }
     }
-    QJsonObject json_object;
-    m_wordbreaker->write_wordbreaker_to_json(json_object);
+    m_wordbreaker->write_wordbreaker_to_json("test.json");
 }
 void Lexicon::add_entry(Entry* entry)
 {
@@ -85,7 +70,7 @@ void Lexicon::FilterZeroCountEntries(int iteration_number){
         QMapIterator<QString, Entry*> iter(*m_EntryDict);
         Entry* entry = m_EntryDict->value(key);
         if (entry->get_count() == 0){
-            qDebug() << 82 << "iteration" << iteration_number << key << "size" << m_Limbo->count();
+            //qDebug() << 82 << "iteration" << iteration_number << key << "size" << m_Limbo->count();
             m_Limbo->insert (key, m_EntryDict->value(key));
             if (m_EntryDict->contains(key) &&
                     m_EntryDict->value(key) ) {
@@ -137,6 +122,9 @@ void Lexicon::read_corpus(QString infilename){
    m_SizeOfLongestEntry = 1;
    compute_dict_frequencies();
 }
+void Lexicon::add_word(Word * word){
+    m_TrueDictionary->insert(word->get_key(), word);
+}
 void Lexicon::read_broken_corpus(QString infilename, int numberoflines) {
     QStringList original_raw_corpus;
     infilename= QFileDialog::getOpenFileName(m_wordbreaker->m_main_window, "Choose File", "/home/jagoldsm/Dropbox/data/english-browncorpus", "text files (*.txt)");
@@ -166,7 +154,8 @@ void Lexicon::read_broken_corpus(QString infilename, int numberoflines) {
             m_NumberOfTrueRunningWords += 1;
             if (!m_TrueDictionary->contains(word) ){
                     Word * p_word = new Word(word, 1);
-                    m_TrueDictionary->insert( word, p_word);
+                    //m_TrueDictionary->insert( word, p_word);
+                    add_word(p_word);
             }else{
                 m_TrueDictionary->value(word)->increment_count(1);
             }
@@ -197,7 +186,7 @@ void Lexicon::read_broken_corpus(QString infilename, int numberoflines) {
     m_wordbreaker->m_corpus_model->emit dataChanged(index1, index2);
     m_wordbreaker->m_main_window->m_true_word_list_tablewidget->setRowCount(m_TrueDictionary->count());
     m_wordbreaker->m_main_window->m_true_word_list_tablewidget->setColumnCount(2);
-    put_wordlist_on_tablewidget( m_TrueDictionary,  m_wordbreaker->m_main_window->m_true_word_list_tablewidget );
+    put_wordlist_on_tablewidget(   m_wordbreaker->m_main_window->m_true_word_list_tablewidget );
 }
 
 void Lexicon::compute_dict_frequencies(){
@@ -868,30 +857,38 @@ void Lexicon::RecallPrecision(int iteration_number, int total_word_count_in_pars
         }
 
 }
-void Lexicon::put_wordlist_on_tablewidget(QMap<QString, Word* > * wordlist, QTableWidget* widget){
+//void Lexicon::put_wordlist_on_tablewidget(QMap<QString, Word* > * wordlist, QTableWidget* widget){
+void Lexicon::put_wordlist_on_tablewidget(QTableWidget* widget){
     int row(0);
-    foreach (QString word,  wordlist->keys()){
+    widget->clear();
+    widget->setRowCount(m_TrueDictionary->count());
+    foreach (QString word,  m_TrueDictionary->keys()){
         QTableWidgetItem* item = new QTableWidgetItem(word);
         widget->setItem(row,0,item);
-
-        item = new QTableWidgetItem(QString::number(wordlist->value(word)->get_count()));
+        //qDebug() << 868 << m_TrueDictionary->value(word)->get_count() << m_TrueDictionary->value(word)->get_key();
+        item = new QTableWidgetItem(QString::number(m_TrueDictionary->value(word)->get_count()));
         widget->setItem(row,1,item);
 
         row++;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
+void Lexicon::quit(){
+        QCoreApplication::quit();
+}
+
+
+//void Lexicon::save_file(){
+//    write_lexicon_to_json();
+//}
+
+
+
+
+
+
+
+
+
+
+
+
