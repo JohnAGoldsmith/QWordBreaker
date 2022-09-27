@@ -156,7 +156,7 @@ void Word::read_word_from_json(QJsonObject & json_word){
 void Word::write_word_to_json(QJsonObject & words){
     QJsonObject this_word;
     this_word["count"]=  m_count;
-    qDebug() << 157 << m_key;
+    //qDebug() << 157 << m_key;
     WordHistory * history = get_history();
     QJsonArray json_parse_histories_1;
     QList<history_of_ParseCounts*> * parse_list = history->get_parse_list();
@@ -175,11 +175,11 @@ void Word::write_word_to_json(QJsonObject & words){
             json_slice["iteration"] = iteration;
             json_slice["count"] = count;
             json_iter_count_history.append(json_slice);
-            qDebug() << 176 << "iteration" <<iteration  << "count" << count;
+            //qDebug() << 176 << "iteration" <<iteration  << "count" << count;
         }
         json_parse_history_2["history"] = json_iter_count_history;
-        qDebug() << 181 << "This many parses so far" << n+1;
-        qDebug() << 182 << "This many items in the last parse: " << list->size();
+        //qDebug() << 181 << "This many parses so far" << n+1;
+        //qDebug() << 182 << "This many items in the last parse: " << list->size();
         json_parse_histories_1.append(json_parse_history_2);
     }
     this_word["history"] = json_parse_histories_1;

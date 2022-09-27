@@ -152,7 +152,14 @@ void MainWindow::show_selected_entry_on_graph(){
             qDebug() << 112 << n << entry->get_history()->at(n)->m_count;
         }
         m_chart->addSeries(series);
-
+        QLogValueAxis *axisY = new QLogValueAxis;
+        QValueAxis *axisX = new QValueAxis;
+        axisY->setRange(0,100);
+        axisX->setRange(0, m_wordbreaker->get_number_of_iterations());
+        axisX->setTickCount(10);
+        axisX->setLabelFormat("%.2f");
+        m_chart->setAxisX(axisX, series);
+        m_chart->setAxisY(axisY, series);
     }
     if (false){
         QTableWidgetItem * item = m_entry_list_tablewidget->selectedItems().first();
