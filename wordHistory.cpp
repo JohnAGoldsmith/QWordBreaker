@@ -89,20 +89,20 @@ QStringList WordHistory::display(){
     //output.clear();
     output << "second part: " +  m_word;
     int previous_count (0);
-    qDebug() << 92 << m_parse_list->size();
+    //qDebug() << 92 << m_parse_list->size();
     foreach(history_of_ParseCounts * history, * m_parse_list){
         output.append(history->m_parse);
-        qDebug() << 95 << history->m_parse;
-        qDebug() << 96 << history->m_historical_parse_counts.size();
+        //qDebug() << 95 << history->m_parse;
+        //qDebug() << 96 << history->m_historical_parse_counts.size();
         foreach (iteration_based_count * count,  history->m_historical_parse_counts ){
-            qDebug() << 97 << count->m_iteration;
-            qDebug() << 98 << count->m_count;
-            qDebug() << 99;
+            //qDebug() << 97 << count->m_iteration;
+            //qDebug() << 98 << count->m_count;
+            //qDebug() << 99;
             output.append(QString::number(count->m_iteration) + ":" + QString::number(count->m_count));
         }
     }
 
-
+///dd
 
     return output;
 }

@@ -57,8 +57,8 @@ MainWindow::MainWindow(QWidget *parent)
     m_listview_2 = new QListView(this);
     m_splitter_1->addWidget(m_listview_2);
 
-    //m_wordlist_tableview = new QTableView(this);
-    //m_splitter_1->addWidget(m_wordlist_tableview);
+    m_entry_list_tableview = new QTableView(this);
+    m_splitter_1->addWidget(m_entry_list_tableview);
 
     m_entry_list_tablewidget = new QTableWidget(15,2,this);
     m_splitter_1->addWidget(m_entry_list_tablewidget);
@@ -80,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent)
     axisX->setMinorTickCount(10);
     m_chart->addAxis(axisX, Qt::AlignBottom);
 
-    QValueAxis *axisY = new QValueAxis();
+    QLogValueAxis *axisY = new QLogValueAxis();
     //axisY->setRange(0, 150);
     axisY->setTitleText("Counts");
     m_chart->addAxis(axisY, Qt::AlignLeft);
@@ -94,7 +94,16 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::show_selected_entry_on_graph );
 
 
+    /*
+    QObject::connect(m_entry_list_tablewidget, &QTableWidget::itemChanged,
+                     this, [](QListWidgetItem * item) {
+            if (item->checkState() == Qt::Checked){
+            }
+            else{
+            }
 
+        });
+    */
 }
 
 
@@ -114,6 +123,7 @@ void MainWindow::place_entrydict_on_table_widget( QMap<QString, Entry*> * entry_
     while(iter.hasNext()){
         iter.next();
        QTableWidgetItem* item = new QTableWidgetItem(iter.key());
+       item->setCheckState(Qt::Unchecked);
        widget->setItem(row,0,item);
        QString count = QString::number(iter.value()->get_count());
        QTableWidgetItem* item2 = new QTableWidgetItem( count);
@@ -152,14 +162,17 @@ void MainWindow::show_selected_entry_on_graph(){
             qDebug() << 112 << n << entry->get_history()->at(n)->m_count;
         }
         m_chart->addSeries(series);
-        QLogValueAxis *axisY = new QLogValueAxis;
+        QLogValueAxis *axisY =  new QLogValueAxis;
+        axisY->setBase(2);
+        axisY->setRange(0,40);
+        m_chart->setAxisY(axisY, series);
+
         QValueAxis *axisX = new QValueAxis;
-        axisY->setRange(0,100);
         axisX->setRange(0, m_wordbreaker->get_number_of_iterations());
         axisX->setTickCount(10);
         axisX->setLabelFormat("%.2f");
         m_chart->setAxisX(axisX, series);
-        m_chart->setAxisY(axisY, series);
+
     }
     if (false){
         QTableWidgetItem * item = m_entry_list_tablewidget->selectedItems().first();

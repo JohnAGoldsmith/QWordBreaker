@@ -20,6 +20,11 @@
 class Lexicon;
 class TableModel;
 
+struct string_count{
+    QString string;
+    int     count;
+      string_count(QString s, int c) {string = s; count = c;}
+};
 
 struct   EvaluationTriple{
     int iteration;
@@ -46,7 +51,8 @@ class Wordbreaker : public QObject
     QStringList     m_raw_original_corpus;
     ListModel *     m_corpus_model;
     ListModel *     m_parsed_corpus_model;
-    //TableModel *    m_word_table_model;
+    TableModel *    m_entries_model;
+
 
     QShortcut *     m_keyCtrlA; // start program
     QShortcut *     m_keyCtrlJ; // open json file
@@ -73,6 +79,8 @@ public slots:
     void            write_wordbreaker_to_json(QString);
     void            write_wordbreaker_to_json_ask_for_filename();
     void            read_json();
+    void            load_entries_model();
+    void            begin();
 
 
 public:

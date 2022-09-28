@@ -11,6 +11,7 @@ class Wordbreaker;
 
 class Lexicon : public QObject
 {
+    friend Wordbreaker;
 
     Q_OBJECT
 
@@ -18,6 +19,7 @@ class Lexicon : public QObject
     Map                             m_LetterDict;
     Map                             m_LetterPlog;
     QMap<QString, Entry*> *         m_EntryDict;
+    QList <string_count*>           m_EntryList; // for use in Model
     QMap<QString, Word*> *          m_TrueDictionary;
     QMap<QString, Entry*> *         m_Limbo; // all Entries that have been removed because of zero counts.`
 
@@ -81,6 +83,7 @@ public:
     void     write_lexicon_to_json(QJsonObject & json_object);
     void     read_entries_from_json(QJsonObject & json_object);
     void     read_words_from_json(QJsonObject & words);
+    void     copy_entries_to_entrylist();
 
 
 public slots:

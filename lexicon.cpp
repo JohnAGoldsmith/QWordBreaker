@@ -30,21 +30,19 @@ void Lexicon::commence(){
      }
 
     m_wordbreaker->m_main_window->place_entrydict_on_table_widget(m_EntryDict);
+    copy_entries_to_entrylist(); // for qmodel of entries.
+    // update the entrylist model:
 
+}
 
-    if (false) {
-        foreach (QString real_word, m_TrueDictionary->keys()){
-            if ( ! m_WordHistories.contains(real_word) ){
-                qDebug() << "Problem!  Real word was not analyzed.";
-            } else {
-                WordHistory* word_history = m_WordHistories.value(real_word);
-                if (! word_history) {
-                    qDebug() << "Problem line 87" << real_word;
-                }
-            }
-        }
+void Lexicon::copy_entries_to_entrylist(){
+    m_EntryList.reserve(m_EntryDict->size());
+    QMapIterator<QString, Entry*>  iter(*m_EntryDict);
+    while ( iter.hasNext() ) {
+        iter.next();
+        string_count * SC  = new string_count( iter.key(), iter.value()->get_count() );
+        m_EntryList.append( SC );
     }
-    m_wordbreaker->write_wordbreaker_to_json("test.json");
 }
 void Lexicon::add_entry(Entry* entry)
 {
@@ -181,12 +179,15 @@ void Lexicon::read_broken_corpus(QString infilename, int numberoflines) {
     compute_dict_frequencies();
 
     // -------------   place information on GUI -------------------------------------------------//
-    QModelIndex index1 = m_wordbreaker->m_corpus_model->index(0,0);
-    QModelIndex index2 = m_wordbreaker->m_corpus_model->index(get_corpus()->length(),0);
-    m_wordbreaker->m_corpus_model->emit dataChanged(index1, index2);
+    //                 move this to wordbreaker class  ??                                         //
+    //QModelIndex index1 = m_wordbreaker->m_corpus_model->index(0,0);
+    //QModelIndex index2 = m_wordbreaker->m_corpus_model->index(get_corpus()->length(),0);
+    //m_wordbreaker->m_corpus_model->emit dataChanged(index1, index2);
+    m_wordbreaker->m_corpus_model->emit dataChanged(QModelIndex(), QModelIndex() );
+
     m_wordbreaker->m_main_window->m_true_word_list_tablewidget->setRowCount(m_TrueDictionary->count());
     m_wordbreaker->m_main_window->m_true_word_list_tablewidget->setColumnCount(2);
-    put_wordlist_on_tablewidget(   m_wordbreaker->m_main_window->m_true_word_list_tablewidget );
+    put_wordlist_on_tablewidget(m_wordbreaker->m_main_window->m_true_word_list_tablewidget );
 }
 
 void Lexicon::compute_dict_frequencies(){

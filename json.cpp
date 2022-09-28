@@ -20,14 +20,8 @@ void Lexicon::write_lexicon_to_json(QJsonObject & json_object){
         entry->write_entry_to_json(entries);
     }
     json_object["2-entries"] = entries;
-
-
     QJsonObject words;
     QMapIterator<QString, Word*> iter(*m_TrueDictionary);
-
-
-
-
     while (iter.hasNext()){
         iter.next();
         iter.value()->write_word_to_json(words);
@@ -128,27 +122,27 @@ void Word::read_word_from_json(QJsonObject & json_word){
                         if (this_json_parse_history.contains("history") && this_json_parse_history["history"].isArray() ) {
                             QJsonArray this_history_array = this_json_parse_history["history"].toArray();
                             history_of_ParseCounts * these_parsecounts  = new history_of_ParseCounts(this_parse);
-                            qDebug() << 131 << this_parse;
+                            //qDebug() << 131 << this_parse;
 
                             for (int slice_no = 0; slice_no < this_history_array.size(); slice_no++){
                                 /*       one slice of the parse's history      */
                                 QJsonObject json_slice = this_history_array[slice_no].toObject();
                                 these_parsecounts->add_an_iteration_and_count_to_parse(json_slice["iteration"].toInt(), json_slice["count"].toInt() );
                                 //qDebug() << 135 << json_slice["iteration"].toInt() <<  json_slice["count"].toInt() ;
-                                qDebug() << 138 << json_slice["iteration"].toInt() <<
+                                //qDebug() << 138 << json_slice["iteration"].toInt() <<
                                             139 << json_slice["count"].toInt();
                             }
                             m_history->add_history_of_parse_counts(these_parsecounts);
 
-                            qDebug() << 142 << m_history->get_word() << m_history->get_parse_list()->size();
+                            //qDebug() << 142 << m_history->get_word() << m_history->get_parse_list()->size();
                         }
                 }
-                qDebug() << 145;
+                //qDebug() << 145;
             }
-            qDebug() << 147;
+            //qDebug() << 147;
         } // end of one parse
 
-        qDebug() <<149 <<  m_history->display();
+        //qDebug() <<149 <<  m_history->display();
 
     }
 }

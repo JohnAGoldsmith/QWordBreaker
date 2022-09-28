@@ -52,12 +52,15 @@ private:
     QSplitter   * m_splitter_1;
     QListView   * m_listview_1;
     QListView   * m_listview_2;
+    QTableView  * m_entry_list_tableview;
     QTableWidget * m_entry_list_tablewidget;
     QTableWidget * m_true_word_list_tablewidget;
     QTableWidget * m_tablewidget_3;
     QSpinBox     * m_iteration_spinbox;
     QProgressBar * m_progress_bar_1;
     QProgressBar * m_progress_bar_2;
+
+
 
     void place_word_history_in_tablewidget(); // this is triggered by user selecting a new item in the true word widget (widget 2)
     void place_entrydict_on_table_widget(QMap<QString, Entry*> * );

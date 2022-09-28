@@ -1,48 +1,63 @@
 #include <QModelIndex>
 #include "lexicon.h"
 #include "tablemodel.h"
+#include "wordbreaker.h"
 
-
-TableModel::TableModel(QList< QPair< QString, int> > * list, QObject * parent ) {
+TableModel::TableModel(QList< string_count * > * list, QObject * parent ) {
     m_list = list;
+
 }
 TableModel::~TableModel(){
     if (m_list){
-        delete m_list;
+        foreach (string_count * sc, *m_list){
+            delete sc;
+        }
     }
 }
 
 int TableModel::rowCount(const QModelIndex &parent) const{
-    //qDebug()<< 12  << m_list->count();
     return m_list->count();
 }
 int TableModel::columnCount(const QModelIndex &parent) const{
     return 2;
 }
 QVariant TableModel::data(const QModelIndex &index, int role ) const{
-    if ( index.isValid() &&     role == Qt::EditRole ) {
-        if (index.column() == 0) {
-            //qDebug() << 32 << m_list->value(index.row()).first;
-            return m_list->value(index.row()).first;
-        } else
-        { if (index.column() == 1)
-            {
-                return QVariant(m_list->value(index.row()).second);
-            }
+    if (!index.isValid()) { return QVariant(); }
+    if (role != Qt::DisplayRole) {return QVariant();}
+    if (index.row() >= m_list->size() || index.row() < 0)
+        return QVariant();
+    if (role == Qt::DisplayRole) {
+        switch (index.column()){
+           case 0:
+                return QVariant(m_list->value(index.row())->string);
+           case 1:
+                 return QVariant(m_list->value(index.row())->count);
         }
-    }
+     }
+     if (role == Qt::FontRole){
+        QFont font;
+        font.setBold(true);
+        return font;
+     }
+
+     if (role==Qt::ForegroundRole  ){
+        QBrush brush;
+        brush.setColor(Qt::GlobalColor(Qt::darkBlue));
+        return brush;
+     }
+     if (role==Qt::CheckStateRole){
+            return Qt::Unchecked;
+     }
+
+     return QVariant();
+
+
 }
-/*
-void TableModel::refresh_1(QMap<QString,Entry*> * entries){
-    m_entries =  entries;
-    if (m_words) { delete m_words;}
-    m_words = new QStringList(entries->keys());
-    QModelIndex index1 = index(0,0);
-    QModelIndex index2 = index (m_words->length(),1);
-    dataChanged(index1, index2);
-}
-*/
-void  TableModel::refresh_list(QList<QPair<QString,int> > * list)
+
+void  TableModel::refresh_list(QList< string_count* > * list)
 {
         m_list = list;
+}
+void TableModel::call_refresh(){
+   emit dataChanged(QModelIndex(), QModelIndex(),   QVector<int>() );
 }

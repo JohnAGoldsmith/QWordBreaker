@@ -10,6 +10,7 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    abstracttablemodel.cpp \
     entry.cpp \
     json.cpp \
     lexicon.cpp \
@@ -22,6 +23,7 @@ SOURCES += \
     wordbreaker.cpp
 
 HEADERS += \
+    abstracttablemodel.h \
     entry.h \
     lexicon.h \
     listmodel.h \

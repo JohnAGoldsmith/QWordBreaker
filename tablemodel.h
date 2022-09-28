@@ -1,6 +1,7 @@
 #ifndef TABLEMODEL_H
 #define TABLEMODEL_H
 #include <QAbstractTableModel>
+#include "wordbreaker.h"
 
 class Entry;
 
@@ -9,20 +10,21 @@ class TableModel : public QAbstractTableModel
 
     Q_OBJECT
 
-    QList< QPair< QString, int > > * m_list;
+    QList< string_count * > * m_list;
 
 
 
 public:
-//    TableModel(QMap<QString, Entry*> *, parent QObject = nullptr );
-    TableModel( QList<QPair<QString,int> > * , QObject * parent = nullptr);
+
+    TableModel( QList< string_count* > * , QObject * parent = nullptr);
     ~TableModel();
-    void        refresh_list(QList<QPair<QString,int> > * list);
+    void        refresh_list(QList< string_count* > * list);
     int         get_count() {return m_list->length();}
-    int         rowCount(const QModelIndex &parent = QModelIndex()) const;
-    int         columnCount(const QModelIndex &parent = QModelIndex()) const;
-    QVariant    data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-    //void        refresh_1(QMap<QString,Entry*> * new_entries);
+    int         rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    int         columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    QVariant    data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    void        call_refresh();
+
 };
 
 #endif // TABLEMODEL_H
