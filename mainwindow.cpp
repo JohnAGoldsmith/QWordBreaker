@@ -9,19 +9,16 @@
 #include "wordbreaker.h"
 #include "wordHistory.h"
 #include "lexicon.h"
-
+#include "chart.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-
     m_layout = new QVBoxLayout(this);
 
     QWidget * widget = new QWidget();
     widget->setLayout(m_layout);
     setCentralWidget(widget);
-
-
 
     m_splitter_top = new QSplitter(Qt::Vertical, this);
     m_layout->addWidget(m_splitter_top);
@@ -39,6 +36,10 @@ MainWindow::MainWindow(QWidget *parent)
         m_splitter_top->addWidget(m_graphics_view);
         m_graphics_view->show();
     }
+
+    m_new_chart = new Chart();
+    m_new_chartview = new QChartView(m_new_chart);
+    m_splitter_top->addWidget(m_new_chartview);
 
     m_iteration_spinbox  = new QSpinBox(this);
     m_splitter_top->addWidget(m_iteration_spinbox);
@@ -73,27 +74,35 @@ MainWindow::MainWindow(QWidget *parent)
     m_splitter_1->addWidget(m_tablewidget_3);
     m_tablewidget_3->setSortingEnabled(false);
 
-    QValueAxis *axisX = new QValueAxis();
-    axisX->setTitleText("Iteration");
-    //axisX->setRange(00, 100);
-    axisX->setMinorGridLineVisible(true);
-    axisX->setMinorTickCount(10);
-    m_chart->addAxis(axisX, Qt::AlignBottom);
-
-    QLogValueAxis *axisY = new QLogValueAxis();
-    //axisY->setRange(0, 150);
-    axisY->setTitleText("Counts");
-    m_chart->addAxis(axisY, Qt::AlignLeft);
-
     m_wordbreaker= new Wordbreaker(this);
 
+    // can I remove ALL of this? on axes :
+    m_axis_X = new QValueAxis();
+    m_axis_X->setRange(0, m_wordbreaker->get_number_of_iterations());
+    if (false){
+        m_axis_X->setTitleText("Iteration");
+        m_axis_X->setTickCount(10);
+        m_axis_X->setLabelFormat("%.2f");
+        m_axis_X->setMinorGridLineVisible(true);
+        m_axis_X->setMinorTickCount(10);
+        m_chart->addAxis(m_axis_X, Qt::AlignBottom);
+        //m_chart->setAxisX(m_axis_X, series);
+    }
+    m_axis_Y = new QLogValueAxis();
+    if (false){
+        m_axis_Y->setTitleText("Counts");
+        m_axis_Y->setBase(2);
+        m_axis_Y->setRange(0,40);
+        //m_chart->setAxisY(m_axis_Y, series);
+    }
+    m_chart->addAxis(m_axis_Y, Qt::AlignLeft);
 
     connect(m_true_word_list_tablewidget, &QTableWidget::itemSelectionChanged,
             this, &MainWindow::place_word_history_in_tablewidget );
     connect(m_entry_list_tablewidget, &QTableWidget::itemSelectionChanged,
-            this, &MainWindow::show_selected_entry_on_graph );
-
-
+            this, &MainWindow::show_selected_entries_on_graph );
+    connect(m_true_word_list_tablewidget, &QTableWidget::itemSelectionChanged,
+            this, &MainWindow::show_selected_word_on_graph );
     /*
     QObject::connect(m_entry_list_tablewidget, &QTableWidget::itemChanged,
                      this, [](QListWidgetItem * item) {
@@ -105,9 +114,6 @@ MainWindow::MainWindow(QWidget *parent)
         });
     */
 }
-
-
-
 MainWindow::~MainWindow()
 {
     //delete ui;
@@ -130,7 +136,6 @@ void MainWindow::place_entrydict_on_table_widget( QMap<QString, Entry*> * entry_
        widget->setItem(row,1,item2);
        row += 1;
    }
-
 }
 void MainWindow::place_word_history_in_tablewidget( ){
 
@@ -145,54 +150,57 @@ void MainWindow::place_word_history_in_tablewidget( ){
     for (auto rowno =0; rowno < row_count; rowno++) {
         m_tablewidget_3->setItem( rowno, 0, new QTableWidgetItem(word_history->display().at(rowno)) );
     }
+}
+void MainWindow::show_selected_word_on_graph(){
+    //QStringList entry_list;
+    QTableWidgetItem * item = m_true_word_list_tablewidget->selectedItems().first();
+    QString word_text = item->text();
+    Word * word = m_wordbreaker->get_lexicon() ->get_TrueDictionary()->value(word_text);
+    WordHistory* word_history = word->get_history();
+    foreach (history_of_ParseCounts * history_of_PC ,* word_history->get_parse_list() ){
+        QLineSeries *series = new QLineSeries();
+        QString entry = history_of_PC->m_parse;
+        //entry_list.append(entry);
+        QList<iteration_based_count*> * IBC_list = & history_of_PC->m_historical_parse_counts;
+        for (int n = 0; n < IBC_list->size(); n++){
+            series->append(IBC_list->at(n)->m_iteration , IBC_list->at(n)->m_count );
+            qDebug() << 112 << n << IBC_list->at(n)->m_count;
+        }
+    }
+}
+
+void MainWindow::show_entries_on_graph(QList<Entry*> * entry_list){
 
 
 }
-void MainWindow::show_selected_entry_on_graph(){
 
-
-
+void MainWindow::show_entry_on_graph(Entry* entry){
+    if (!entry) { return;}
+    QString entry_text = entry->get_key();
+    QLineSeries *series = new QLineSeries();
+    for (int n = 0; n < entry->get_history()->count(); n++){
+        series->append(entry->get_history()->at(n)->m_iteration , entry->get_history()->at(n)->m_count );
+    }
+    m_chart->addSeries(series);
+    m_chart->createDefaultAxes();
+}
+void MainWindow::show_selected_entries_on_graph(){
     foreach(QTableWidgetItem * item, m_entry_list_tablewidget->selectedItems()){
         QString entry_text = item->text();
         Entry* entry = m_wordbreaker->get_lexicon()->get_entry_dict()->value(entry_text);
-        if (!entry) { return;}
-        QLineSeries *series = new QLineSeries();
-        for (int n = 0; n < entry->get_history()->count(); n++){
-            series->append(entry->get_history()->at(n)->m_iteration , entry->get_history()->at(n)->m_count );
-            qDebug() << 112 << n << entry->get_history()->at(n)->m_count;
+        if (!entry) { continue;}
+
+        show_entry_on_graph(entry);
+        m_new_chart->add_entry(entry);
+
+
+        if (false) {
+            QLineSeries *series = new QLineSeries();
+            for (int n = 0; n < entry->get_history()->count(); n++){
+                series->append(entry->get_history()->at(n)->m_iteration , entry->get_history()->at(n)->m_count );
+            }
+            m_chart->addSeries(series);
         }
-        m_chart->addSeries(series);
-        QLogValueAxis *axisY =  new QLogValueAxis;
-        axisY->setBase(2);
-        axisY->setRange(0,40);
-        m_chart->setAxisY(axisY, series);
-
-        QValueAxis *axisX = new QValueAxis;
-        axisX->setRange(0, m_wordbreaker->get_number_of_iterations());
-        axisX->setTickCount(10);
-        axisX->setLabelFormat("%.2f");
-        m_chart->setAxisX(axisX, series);
-
-    }
-    if (false){
-        QTableWidgetItem * item = m_entry_list_tablewidget->selectedItems().first();
-        QString entry_text = item->text();
-
-        Entry* entry = m_wordbreaker->get_lexicon()->get_entry_dict()->value(entry_text);
-        QLineSeries *series = new QLineSeries();
-        for (int n = 0; n < entry->get_history()->count(); n++){
-            series->append( n, entry->get_history()->at(n)->m_count );
-            qDebug() << 112 << n << entry->get_history()->at(n)->m_count;
-        }
-        m_chart->addSeries(series);
-
-    }
-
-
-
-    if (false){
-        m_chart_scene->addItem(m_chart);
-        m_graphics_view->show();
     }
     m_chart->createDefaultAxes();
 }

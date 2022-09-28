@@ -11,6 +11,7 @@ CONFIG += c++11
 
 SOURCES += \
     abstracttablemodel.cpp \
+    chart.cpp \
     entry.cpp \
     json.cpp \
     lexicon.cpp \
@@ -24,6 +25,7 @@ SOURCES += \
 
 HEADERS += \
     abstracttablemodel.h \
+    chart.h \
     entry.h \
     lexicon.h \
     listmodel.h \

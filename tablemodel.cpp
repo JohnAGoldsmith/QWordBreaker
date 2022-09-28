@@ -54,3 +54,20 @@ void  TableModel::refresh_list(QList< string_count* > * list)
 void TableModel::call_refresh(){
    emit dataChanged(QModelIndex(), QModelIndex(),   QVector<int>() );
 }
+/*
+bool TableModel::setData(const QModelIndex & index, const QVariant & value, int role) {
+    if (role == Qt::CheckStateRole && index.column() == 0) {
+        //QAb  *item = static_cast<TreeItem*>(index.internalPointer());
+        QTreeWidgetItem *check = static_cast<QTreeWidgetItem*>(index.internalPointer());
+
+        if (value == Qt::Checked) {
+            checkedState_ = Qt::Checked;
+        }
+        else {
+            checkedState_ = Qt::Unchecked;
+        }
+    }
+    emit dataChanged(index, index);
+    return true;
+}
+*/

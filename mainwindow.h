@@ -11,6 +11,7 @@
 #include <QAbstractTableModel>
 #include <QtCharts>
 #include "listmodel.h"
+#include "chart.h"
 
 class Lexicon;
 class Wordbreaker;
@@ -36,17 +37,24 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void        show_selected_entry_on_graph();
-
+    void        show_entry_on_graph(Entry* entry);
+    void        show_entries_on_graph(QList<Entry*> * entry_list);
+    void        show_selected_entries_on_graph();
+    void        show_selected_word_on_graph();
 private:
     Ui::MainWindow *ui;
     Wordbreaker * m_wordbreaker;
     QVBoxLayout * m_layout;
 
+    Chart       * m_new_chart;
+    QChartView  * m_new_chartview;
+
     QChart      * m_chart;
     QChartView  * m_chart_view;
     QGraphicsScene * m_chart_scene;
     QGraphicsView * m_graphics_view;
+    QLogValueAxis * m_axis_Y;
+    QValueAxis    * m_axis_X;
 
     QSplitter   * m_splitter_top;
     QSplitter   * m_splitter_1;
@@ -59,8 +67,6 @@ private:
     QSpinBox     * m_iteration_spinbox;
     QProgressBar * m_progress_bar_1;
     QProgressBar * m_progress_bar_2;
-
-
 
     void place_word_history_in_tablewidget(); // this is triggered by user selecting a new item in the true word widget (widget 2)
     void place_entrydict_on_table_widget(QMap<QString, Entry*> * );
