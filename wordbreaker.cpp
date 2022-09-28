@@ -28,9 +28,9 @@ Wordbreaker::Wordbreaker(MainWindow * mainwindow, QObject * parent): QObject(par
 
     m_corpus_model          = new ListModel( &m_raw_original_corpus,  this);
     m_parsed_corpus_model   = new ListModel( m_lexicon->get_parsed_corpus_display(), this );
-    m_entries_model         = new TableModel( &m_lexicon->m_EntryList, this);
+    //m_entries_model         = new TableModel( &m_lexicon->m_EntryList, this);
 
-    m_main_window->m_entry_list_tableview->setModel(m_entries_model);
+    //m_main_window->m_entry_list_tableview->setModel(m_entries_model);
     m_main_window->m_listview_1          ->setModel(m_corpus_model);
     m_main_window->m_listview_2          ->setModel(m_parsed_corpus_model);
 
@@ -60,7 +60,10 @@ Wordbreaker::Wordbreaker(MainWindow * mainwindow, QObject * parent): QObject(par
 void Wordbreaker::begin(){
     m_lexicon->commence();
 
-    m_entries_model->call_refresh();
+    m_parsed_corpus_model->emit dataChanged(QModelIndex(), QModelIndex());
+    m_main_window->place_entrydict_on_table_widget(m_lexicon->m_EntryDict);
+    m_entries_model         = new TableModel( &m_lexicon->m_EntryList, this);
+    m_main_window->m_entry_list_tableview->setModel(m_entries_model);
     write_wordbreaker_to_json("test.json");
 }
 

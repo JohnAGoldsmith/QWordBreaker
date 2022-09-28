@@ -14,7 +14,6 @@ TableModel::~TableModel(){
         }
     }
 }
-
 int TableModel::rowCount(const QModelIndex &parent) const{
     return m_list->count();
 }
@@ -23,7 +22,6 @@ int TableModel::columnCount(const QModelIndex &parent) const{
 }
 QVariant TableModel::data(const QModelIndex &index, int role ) const{
     if (!index.isValid()) { return QVariant(); }
-    if (role != Qt::DisplayRole) {return QVariant();}
     if (index.row() >= m_list->size() || index.row() < 0)
         return QVariant();
     if (role == Qt::DisplayRole) {
@@ -39,21 +37,16 @@ QVariant TableModel::data(const QModelIndex &index, int role ) const{
         font.setBold(true);
         return font;
      }
-
      if (role==Qt::ForegroundRole  ){
         QBrush brush;
         brush.setColor(Qt::GlobalColor(Qt::darkBlue));
         return brush;
      }
-     if (role==Qt::CheckStateRole){
+     if (role==Qt::CheckStateRole  && index.column() == 0){
             return Qt::Unchecked;
      }
-
      return QVariant();
-
-
 }
-
 void  TableModel::refresh_list(QList< string_count* > * list)
 {
         m_list = list;
