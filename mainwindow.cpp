@@ -22,21 +22,23 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_splitter_top = new QSplitter(Qt::Vertical, this);
     m_layout->addWidget(m_splitter_top);
-
-    m_chart = new QChart();
-    if (true){
-        m_chart_view = new QChartView(m_chart);
-        m_splitter_top->addWidget(m_chart_view);
-    }
-    if(false){
-        m_chart_scene = new QGraphicsScene();
-        m_graphics_view = new QGraphicsView(m_chart_scene);
-        m_graphics_view->setRenderHint(QPainter::Antialiasing);// Set view antialiasing
-        m_graphics_view->setSceneRect(0, 0, 2000, 280);// Set view size
-        m_splitter_top->addWidget(m_graphics_view);
-        m_graphics_view->show();
-    }
-
+        /*
+        if (false) {
+            m_chart = new QChart();
+            if (true){
+                m_chart_view = new QChartView(m_chart);
+                m_splitter_top->addWidget(m_chart_view);
+            }
+            if(false){
+                m_chart_scene = new QGraphicsScene();
+                m_graphics_view = new QGraphicsView(m_chart_scene);
+                m_graphics_view->setRenderHint(QPainter::Antialiasing);// Set view antialiasing
+                m_graphics_view->setSceneRect(0, 0, 2000, 280);// Set view size
+                m_splitter_top->addWidget(m_graphics_view);
+                m_graphics_view->show();
+            }
+        }
+        */
     m_new_chart = new Chart();
     m_new_chartview = new QChartView(m_new_chart);
     m_splitter_top->addWidget(m_new_chartview);
@@ -79,6 +81,7 @@ MainWindow::MainWindow(QWidget *parent)
     // can I remove ALL of this? on axes :
     m_axis_X = new QValueAxis();
     m_axis_X->setRange(0, m_wordbreaker->get_number_of_iterations());
+    /*
     if (false){
         m_axis_X->setTitleText("Iteration");
         m_axis_X->setTickCount(10);
@@ -88,14 +91,21 @@ MainWindow::MainWindow(QWidget *parent)
         m_chart->addAxis(m_axis_X, Qt::AlignBottom);
         //m_chart->setAxisX(m_axis_X, series);
     }
+    */
+
     m_axis_Y = new QLogValueAxis();
+
+    /*
     if (false){
         m_axis_Y->setTitleText("Counts");
         m_axis_Y->setBase(2);
         m_axis_Y->setRange(0,40);
         //m_chart->setAxisY(m_axis_Y, series);
     }
+
     m_chart->addAxis(m_axis_Y, Qt::AlignLeft);
+    */
+
 
     connect(m_true_word_list_tablewidget, &QTableWidget::itemSelectionChanged,
             this, &MainWindow::place_word_history_in_tablewidget );
@@ -173,7 +183,7 @@ void MainWindow::show_entries_on_graph(QList<Entry*> * entry_list){
 
 
 }
-
+/*
 void MainWindow::show_entry_on_graph(Entry* entry){
     if (!entry) { return;}
     QString entry_text = entry->get_key();
@@ -184,16 +194,17 @@ void MainWindow::show_entry_on_graph(Entry* entry){
     m_chart->addSeries(series);
     m_chart->createDefaultAxes();
 }
+*/
 void MainWindow::show_selected_entries_on_graph(){
     foreach(QTableWidgetItem * item, m_entry_list_tablewidget->selectedItems()){
         QString entry_text = item->text();
         Entry* entry = m_wordbreaker->get_lexicon()->get_entry_dict()->value(entry_text);
         if (!entry) { continue;}
 
-        show_entry_on_graph(entry);
+        //show_entry_on_graph(entry);
         m_new_chart->add_entry(entry);
 
-
+        /*
         if (false) {
             QLineSeries *series = new QLineSeries();
             for (int n = 0; n < entry->get_history()->count(); n++){
@@ -201,6 +212,7 @@ void MainWindow::show_selected_entries_on_graph(){
             }
             m_chart->addSeries(series);
         }
+        */
     }
-    m_chart->createDefaultAxes();
+    //m_chart->createDefaultAxes();
 }

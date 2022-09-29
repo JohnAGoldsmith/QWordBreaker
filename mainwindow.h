@@ -37,7 +37,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void        show_entry_on_graph(Entry* entry);
+    //void        show_entry_on_graph(Entry* entry);
     void        show_entries_on_graph(QList<Entry*> * entry_list);
     void        show_selected_entries_on_graph();
     void        show_selected_word_on_graph();
@@ -49,8 +49,8 @@ private:
     Chart       * m_new_chart;
     QChartView  * m_new_chartview;
 
-    QChart      * m_chart;
-    QChartView  * m_chart_view;
+    //QChart      * m_chart;
+    //QChartView  * m_chart_view;
     QGraphicsScene * m_chart_scene;
     QGraphicsView * m_graphics_view;
     QLogValueAxis * m_axis_Y;

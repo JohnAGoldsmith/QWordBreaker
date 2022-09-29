@@ -39,6 +39,7 @@ void Lexicon::copy_entries_to_entrylist(){
         string_count * SC  = new string_count( iter.key(), iter.value()->get_count() );
         m_EntryList.append( SC );
     }
+    qDebug()  << 42 << "size of entrydict "<< m_EntryDict->size() << "size of entrylist "<< m_EntryList.size();
 }
 void Lexicon::add_entry(Entry* entry){
     m_EntryDict->insert(entry->get_key(), entry);
