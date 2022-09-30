@@ -28,7 +28,6 @@ void Lexicon::commence(){
        //.....................................
        RecallPrecision(m_current_iteration,  m_total_word_count_in_parse);
      }
-
     copy_entries_to_entrylist(); // for qmodel of entries.
 }
 void Lexicon::copy_entries_to_entrylist(){
@@ -122,14 +121,11 @@ void Lexicon::read_broken_corpus(QString infilename, int numberoflines) {
     if (!fileIn.open(QIODevice::ReadWrite | QIODevice::Text))
         return;
     QTextStream in(&fileIn);
-
-    // ------------------  read file -------------------------------//
     while(!in.atEnd()) {
         QString line = in.readLine();
         original_raw_corpus << line;
     }
     fileIn.close();
-
     //---------- analyze each line  --------------------------------------//
     QStringList  line_list;
     foreach (QString line, original_raw_corpus) {
@@ -137,14 +133,11 @@ void Lexicon::read_broken_corpus(QString infilename, int numberoflines) {
         QList<int>  breakpoint_list;
         get_original_corpus()->append(line);
         line_list = line.split(' ', QString::SkipEmptyParts);
-        if ( line_list.length() <=  1 ) {
-            continue;
-        }
+        if ( line_list.length() <=  1 ) { continue; }
         foreach (QString word, line_list){
             m_NumberOfTrueRunningWords += 1;
             if (!m_TrueDictionary->contains(word) ){
                     Word * p_word = new Word(word, 1);
-                    //m_TrueDictionary->insert( word, p_word);
                     add_word(p_word);
             }else{
                 m_TrueDictionary->value(word)->increment_count(1);

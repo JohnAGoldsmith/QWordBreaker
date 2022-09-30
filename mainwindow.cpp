@@ -4,7 +4,8 @@
 #include <QDebug>
 #include <QSpinBox>
 #include <QtCharts/QLineSeries>
-
+#include <QXYSeries>
+#include <QColor>
 
 #include "wordbreaker.h"
 #include "wordHistory.h"
@@ -112,7 +113,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_entry_list_tablewidget, &QTableWidget::itemSelectionChanged,
             this, &MainWindow::show_selected_entries_on_graph );
     connect(m_true_word_list_tablewidget, &QTableWidget::itemSelectionChanged,
-            this, &MainWindow::show_selected_word_on_graph );
+            this, &MainWindow::show_selected_word_parse_history_on_chart );
     /*
     QObject::connect(m_entry_list_tablewidget, &QTableWidget::itemChanged,
                      this, [](QListWidgetItem * item) {
@@ -160,27 +161,43 @@ void MainWindow::place_word_history_in_tablewidget( ){
     for (auto rowno =0; rowno < row_count; rowno++) {
         m_tablewidget_3->setItem( rowno, 0, new QTableWidgetItem(word_history->display().at(rowno)) );
     }
+
 }
-void MainWindow::show_selected_word_on_graph(){
+void MainWindow::show_selected_word_parse_history_on_chart(){
     //QStringList entry_list;
+    m_new_chart->clear();
+    int temp = 0;
+
     QTableWidgetItem * item = m_true_word_list_tablewidget->selectedItems().first();
     QString word_text = item->text();
     Word * word = m_wordbreaker->get_lexicon() ->get_TrueDictionary()->value(word_text);
     WordHistory* word_history = word->get_history();
     foreach (history_of_ParseCounts * history_of_PC ,* word_history->get_parse_list() ){
         QLineSeries *series = new QLineSeries();
-        QString entry = history_of_PC->m_parse;
+        //QXYSeries * series2 = new QXYSeries();
+        QString parse = history_of_PC->m_parse;
+        series->setName(parse);
+        series->setPointsVisible(true);
+        QPen pen = series->pen();
+        pen.setWidth(3);
+        pen.setColor(Qt::red);
+        series->setPen(pen);
+        //series->setPointConfiguration();
         //entry_list.append(entry);
         QList<iteration_based_count*> * IBC_list = & history_of_PC->m_historical_parse_counts;
         for (int n = 0; n < IBC_list->size(); n++){
             series->append(IBC_list->at(n)->m_iteration , IBC_list->at(n)->m_count );
-            qDebug() << 112 << n << IBC_list->at(n)->m_count;
+            qDebug() << 112 << history_of_PC->m_parse  << n << "iteration" << IBC_list->at(n)->m_iteration << "count " << IBC_list->at(n)->m_count;
         }
+        m_new_chart->addSeries(series);
+        temp++;
     }
+    m_new_chart->createDefaultAxes();
+
+    qDebug () << "this many parse histories" << temp;
 }
 
 void MainWindow::show_entries_on_graph(QList<Entry*> * entry_list){
-
 
 }
 /*

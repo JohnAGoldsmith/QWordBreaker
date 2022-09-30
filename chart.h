@@ -15,6 +15,7 @@ public:
     Chart();
     void    add_entry(Entry*);
     void    add_word(Word*);
+    void    clear();
 };
 
 #endif // CHART_H

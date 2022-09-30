@@ -40,7 +40,7 @@ public:
     //void        show_entry_on_graph(Entry* entry);
     void        show_entries_on_graph(QList<Entry*> * entry_list);
     void        show_selected_entries_on_graph();
-    void        show_selected_word_on_graph();
+    void        show_selected_word_parse_history_on_chart();
 private:
     Ui::MainWindow *ui;
     Wordbreaker * m_wordbreaker;

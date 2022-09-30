@@ -25,3 +25,6 @@ void Chart::add_word(Word* word){
         return;
     }
 }
+void Chart::clear(){
+    removeAllSeries();
+}
