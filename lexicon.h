@@ -9,6 +9,19 @@
 class Word;
 class Wordbreaker;
 
+struct line_analysis{
+    QString     m_new_line;
+    QList<int>  m_breakpoint_list;
+
+};
+struct parse_return {
+    QStringList m_parse;
+    double      m_bit_cost;
+    parse_return(QStringList parse, double bit_cost){
+        m_parse = parse;
+        m_bit_cost = bit_cost;
+    }
+};
 class Lexicon : public QObject
 {
     friend Wordbreaker;
@@ -16,6 +29,7 @@ class Lexicon : public QObject
     Q_OBJECT
 
     Wordbreaker *                   m_wordbreaker;
+    MainWindow *                    m_mainwindow;
     Map                             m_LetterDict;
     Map                             m_LetterPlog;
     QMap<QString, Entry*> *         m_EntryDict;
@@ -31,12 +45,12 @@ class Lexicon : public QObject
     int                             m_SizeOfLongestEntry;
     double                          m_CorpusCost;
     int                             m_current_iteration;
-    int                             m_total_word_count_in_parse;
-    QList<QStringList*>             m_ParsedCorpus;
+    //int                             m_total_word_count_in_parse;
+    QList<QStringList>              m_ParsedCorpus;
     QStringList                     m_parsed_corpus_display;// this is for convenience of programmer; it is m_ParsedCorpus, where each line is "displayed" as a QString instead of the original list of Qstrings
     int                             m_NumberOfHypothesizedRunningWords;
     int                             m_NumberOfTrueRunningWords;
-    QList< QList<int> >             m_true_breakpoint_list;
+    QList< QList<int> * >           m_true_breakpoint_list;
     QList< StringCount >            m_DeletionList;// = list()  # these are the words that were nominated and then not used in any line-parses *at all*.
     Map                             m_DeletionDict;// = dict()  # They never stop getting nominated.
     QList< QPair<double,double> >   m_Break_based_RecallPrecisionHistory;// = list()
@@ -59,15 +73,18 @@ public:
     void        add_entry(StringCount);
     void        add_entry(Entry*);
     void        add_word(Word*);
+    void        add_word_to_True_Dictionary(QString);
+    void        analyze_line(QString  );
     void        FilterZeroCountEntries(int iteration_number);
-    void        read_corpus(QString infile_name);
-    void        read_broken_corpus(QString infile_name, int numberoflines = 100);
+    void        ingest_broken_corpus(QString infile_name, int numberoflines = 100);
+    void        read_in_broken_corpus(QString infile_name, int numberoflines = 100); //QStringList & original_raw_corpus, int numberoflines = 100);
     void        compute_dict_frequencies();
     void        compute_dictionary_length();
     Wordbreaker* get_wordbreaker() {return m_wordbreaker;}
     QMap<QString, Word*> *          get_TrueDictionary() {return m_TrueDictionary;}
     void                            parse_corpus( int  );
-    QPair<QStringList*,double >     parse_word(QString word );
+    //QPair<QStringList*,double >     parse_word(QString word );
+    parse_return   parse_word(QString string);
     void                            PrintParsedCorpus(QString filenameout);
     QList<StringCount>                     generate_candidates(int how_many);
 //    void                            Expectation();
@@ -75,7 +92,7 @@ public:
     void                            Forward( QString, QMap<int, double>& );
     void                            Backward(QString, QMap<int, double>& );
     void        print_lexicon(QFile&);
-    void        RecallPrecision(int iteration_number, int total_word_count_in_parse);
+    void        RecallPrecision(int iteration_number );
 
     //void     put_wordlist_on_tablewidget(QMap<QString, Word* > *, QTableWidget* );
     void     put_wordlist_on_tablewidget(QTableWidget* );
@@ -84,7 +101,7 @@ public:
     void     read_entries_from_json(QJsonObject & json_object);
     void     read_words_from_json(QJsonObject & words);
     void     copy_entries_to_entrylist();
-
+    void    set_progress_bar(int i){m_wordbreaker->m_main_window->m_progress_bar_2->setValue(i);}
 
 public slots:
     void commence();

@@ -89,6 +89,7 @@ public:
     QStringList *   get_raw_original_corpus(){return & m_raw_original_corpus;}
     Lexicon *       get_lexicon() {return m_lexicon;}
     int             get_number_of_iterations(){return m_numberofcycles;}
+
 public:
     Wordbreaker(MainWindow*, QObject * parent = nullptr);
 
