@@ -235,5 +235,5 @@ void MainWindow::show_selected_entries_on_graph(){
 }
 void MainWindow::initialize_progress_bar_1(){
     m_progress_bar_1->setMinimum(0);
-    m_progress_bar_1->setMaximum(m_wordbreaker->get_corpus()->length());
+    m_progress_bar_1->setMaximum(m_wordbreaker->get_corpus_with_spaces()->length());
 }

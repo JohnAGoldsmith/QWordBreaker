@@ -27,9 +27,9 @@ QVariant TableModel::data(const QModelIndex &index, int role ) const{
     if (role == Qt::DisplayRole) {
         switch (index.column()){
            case 0:
-                return QVariant(m_list->value(index.row())->string);
+                return QVariant(m_list->value(index.row())->m_string);
            case 1:
-                 return QVariant(m_list->value(index.row())->count);
+                 return QVariant(m_list->value(index.row())->m_count);
         }
      }
      if (role == Qt::FontRole){

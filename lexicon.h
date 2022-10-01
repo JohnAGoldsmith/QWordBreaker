@@ -50,7 +50,7 @@ class Lexicon : public QObject
     int                             m_NumberOfHypothesizedRunningWords;
     int                             m_NumberOfTrueRunningWords;
     QList< QList<int> >             m_true_breakpoint_list;
-    QList< StringCount >            m_DeletionList;// = list()  # these are the words that were nominated and then not used in any line-parses *at all*.
+    QList< string_count >            m_DeletionList;// = list()  # these are the words that were nominated and then not used in any line-parses *at all*.
     Map                             m_DeletionDict;// = dict()  # They never stop getting nominated.
     QList< QPair<double,double> >   m_Break_based_RecallPrecisionHistory;// = list()
     QList< QPair<double,double> >   m_Token_based_RecallPrecisionHistory;// = list()
@@ -63,13 +63,13 @@ public:
     explicit Lexicon(Wordbreaker*, QObject *parent = nullptr);
     virtual ~Lexicon() {};
 
-    QStringList                  * get_corpus() {return m_wordbreaker->get_corpus();}
-    QStringList                  * get_original_corpus() {return m_wordbreaker->get_raw_original_corpus();}
+    QStringList                  * get_corpus_without_spaces() {return m_wordbreaker->get_corpus_with_spaces();}
+    //QStringList                  * get_original_corpus() {return m_wordbreaker->get_raw_original_corpus();}
     QStringList                  * get_parsed_corpus_display() {return & m_parsed_corpus_display;}
     QMap<QString, Entry*>        * get_entry_dict() {return  m_EntryDict;}
     QMap<QString, WordHistory*>  * get_WordHistories() {return & m_WordHistories;};
     //void        open_lexicon();
-    void        add_entry(StringCount);
+    void        add_entry(string_count);
     void        add_entry(Entry*);
     void        add_word(Word*);
         void        add_word_to_True_Dictionary(QString);
@@ -85,7 +85,7 @@ public:
     void                            parse_corpus( int  );
     parse_return     parse_word(QString word );
     void                            PrintParsedCorpus(QString filenameout);
-    QList<StringCount>                     generate_candidates(int how_many);
+    QList<string_count>                     generate_candidates(int how_many);
 //    void                            Expectation();
 //    void                            Maximization();
     void                            Forward( QString, QMap<int, double>& );

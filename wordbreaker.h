@@ -20,10 +20,11 @@
 class Lexicon;
 class TableModel;
 
+
 struct string_count{
-    QString string;
-    int     count;
-      string_count(QString s, int c) {string = s; count = c;}
+    QString m_string;
+    int     m_count;
+      string_count(QString s, int c) {m_string = s; m_count = c;}
 };
 
 struct   EvaluationTriple{
@@ -47,8 +48,7 @@ class Wordbreaker : public QObject
 
     Lexicon*        m_lexicon;
     MainWindow *    m_main_window;
-    QStringList     m_corpus;  // this is slightly modified during "read_broken_corpus()"; almost the same as m_raw_original_corpus.
-    QStringList     m_raw_original_corpus;
+    QStringList     m_corpus_with_spaces;
     ListModel *     m_corpus_model;
     ListModel *     m_parsed_corpus_model;
     TableModel *    m_entries_model;
@@ -85,8 +85,8 @@ public slots:
 
 public:
     //void            commence() {m_lexicon->open_lexicon();}
-    QStringList *   get_corpus(){return & m_corpus;}
-    QStringList *   get_raw_original_corpus(){return & m_raw_original_corpus;}
+    QStringList *   get_corpus_with_spaces(){return & m_corpus_with_spaces;}
+    //QStringList *   get_raw_original_corpus(){return & m_raw_original_corpus;}
     Lexicon *       get_lexicon() {return m_lexicon;}
     int             get_number_of_iterations(){return m_numberofcycles;}
 public:
