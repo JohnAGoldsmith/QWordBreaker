@@ -97,7 +97,7 @@ void  Lexicon::add_word_to_True_Dictionary(QString string){
     if (!m_TrueDictionary->contains(string) ){
             Word * p_word = new Word(string, 1);
             add_word(p_word);
-            qDebug() << 103 << "new word:" << string;
+
     }else{
         m_TrueDictionary->value(string)->increment_count(1);
     }
@@ -529,12 +529,12 @@ void Lexicon::RecallPrecision(int iteration_number ) {
         int total_number_of_hypothesized_words = 0;
         int total_number_of_true_words = 0;
         for (int linenumber = 0; linenumber < m_true_breakpoint_list.length(); linenumber++){
-            QList<int> * truth = m_true_breakpoint_list[linenumber];
-            if (truth->length() < 2){
+            QList<int>  truth = m_true_breakpoint_list[linenumber];
+            if (truth.length() < 2){
                 //print >>outfile, "Skipping this line:", self.m_Corpus[linenumber];
                 continue;
             }
-            int number_of_true_words = truth->length() -1;
+            int number_of_true_words = truth.length() -1;
             QList<int>  hypothesis;
             int         hypothesis_line_length = 0;
             int         accurate_word_discovery = 0;
@@ -556,8 +556,8 @@ void Lexicon::RecallPrecision(int iteration_number ) {
 
             QString Truth;
             Truth += "T ";
-            for (int a = 0; a < truth->length(); a++){
-                Truth += " " +  QString::number(truth->at(a));
+            for (int a = 0; a < truth.length(); a++){
+                Truth += " " +  QString::number(truth.at(a));
             }
             //qDebug() << Truth;
             QString Hypot;
@@ -574,8 +574,8 @@ void Lexicon::RecallPrecision(int iteration_number ) {
             // state 2: at the last test, hypothesis was # and truth was not
             int         pointer = 0;
             int         state = 0;
-            while ( truth->length() > 0 && hypothesis.length() > 0) {
-                int next_truth = truth->at(0);
+            while ( truth.length() > 0 && hypothesis.length() > 0) {
+                int next_truth = truth.at(0);
                 int next_hypothesis  = hypothesis[0];
                 switch (state){
                     case 0:
@@ -586,9 +586,9 @@ void Lexicon::RecallPrecision(int iteration_number ) {
                             //qDebug() << "Correct break 1: "<< this_line.mid(0,next_hypothesis);
                             accurate_word_discovery += 1;
                             state = 0;
-                            truth->removeFirst();
+                            truth.removeFirst();
                             hypothesis.removeFirst();
-                            if (truth->length() == 0 && hypothesis.length() == 0){
+                            if (truth.length() == 0 && hypothesis.length() == 0){
                                 break;
                             }
                         }
@@ -599,8 +599,8 @@ void Lexicon::RecallPrecision(int iteration_number ) {
                                     real_word_lag += 1;
                                     state = 1;
                                     //pointer = truth.takeFirst();
-                                    truth->removeFirst();
-                                    if (truth->length() == 0){
+                                    truth.removeFirst();
+                                    if (truth.length() == 0){
                                         qDebug() << 504 << "Problem";
                                     }
                                 }
@@ -623,10 +623,10 @@ void Lexicon::RecallPrecision(int iteration_number ) {
                             true_positive_for_break += 1;
                             word_too_big += 1;
                             state = 0;
-                            if (truth->length() == 0 && hypothesis.length() == 0){
+                            if (truth.length() == 0 && hypothesis.length() == 0){
                                 break;
                             }
-                            pointer = truth->takeFirst();
+                            pointer = truth.takeFirst();
                             hypothesis.removeFirst();
                             //qDebug() << "Correct break 2: "<< this_line.mid(0,next_hypothesis);
 
@@ -637,10 +637,10 @@ void Lexicon::RecallPrecision(int iteration_number ) {
                            {
                               real_word_lag += 1;
                               state = 1; // redundantly
-                              if (truth->length() == 0){
+                              if (truth.length() == 0){
                                   qDebug() << 539 << "Problem";
                               }
-                              pointer = truth->takeFirst();
+                              pointer = truth.takeFirst();
                            }
                            else
                            {
@@ -661,11 +661,11 @@ void Lexicon::RecallPrecision(int iteration_number ) {
                             true_positive_for_break += 1;
                             word_too_small +=1;
                             state = 0;
-                            if (truth->length() == 0 && hypothesis.length() == 0){
+                            if (truth.length() == 0 && hypothesis.length() == 0){
                                 break;
                             }
                             //pointer = truth.takeFirst();
-                            truth->removeFirst();
+                            truth.removeFirst();
                             hypothesis.removeFirst();
                             //qDebug() << "Correct break 3: "<< this_line.mid(0,next_hypothesis);
 
@@ -676,10 +676,10 @@ void Lexicon::RecallPrecision(int iteration_number ) {
                             {
                                 real_word_lag += 1;
                                 state = 1;
-                                if (truth->length() == 0){
+                                if (truth.length() == 0){
                                     qDebug() << 576 << "Problem";
                                 }
-                                pointer = truth->takeFirst();
+                                pointer = truth.takeFirst();
 
                             }
                             else
