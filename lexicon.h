@@ -8,7 +8,6 @@
 
 class Word;
 class Wordbreaker;
-
 struct line_analysis{
     QString     m_new_line;
     QList<int>  m_breakpoint_list;
@@ -30,6 +29,7 @@ class Lexicon : public QObject
 
     Wordbreaker *                   m_wordbreaker;
     MainWindow *                    m_mainwindow;
+    QStringList                     m_corpus_without_spaces;
     Map                             m_LetterDict;
     Map                             m_LetterPlog;
     QMap<QString, Entry*> *         m_EntryDict;
@@ -50,8 +50,8 @@ class Lexicon : public QObject
     QStringList                     m_parsed_corpus_display;// this is for convenience of programmer; it is m_ParsedCorpus, where each line is "displayed" as a QString instead of the original list of Qstrings
     int                             m_NumberOfHypothesizedRunningWords;
     int                             m_NumberOfTrueRunningWords;
-    QList< QList<int> * >           m_true_breakpoint_list;
-    QList< StringCount >            m_DeletionList;// = list()  # these are the words that were nominated and then not used in any line-parses *at all*.
+    QList< QList<int> >             m_true_breakpoint_list;
+    QList< string_count >            m_DeletionList;// = list()  # these are the words that were nominated and then not used in any line-parses *at all*.
     Map                             m_DeletionDict;// = dict()  # They never stop getting nominated.
     QList< QPair<double,double> >   m_Break_based_RecallPrecisionHistory;// = list()
     QList< QPair<double,double> >   m_Token_based_RecallPrecisionHistory;// = list()
@@ -64,29 +64,29 @@ public:
     explicit Lexicon(Wordbreaker*, QObject *parent = nullptr);
     virtual ~Lexicon() {};
 
-    QStringList                  * get_corpus() {return m_wordbreaker->get_corpus();}
-    QStringList                  * get_original_corpus() {return m_wordbreaker->get_raw_original_corpus();}
+    QStringList                   get_corpus_without_spaces() {return m_corpus_without_spaces;}
+    //QStringList                  * get_original_corpus() {return m_wordbreaker->get_raw_original_corpus();}
     QStringList                  * get_parsed_corpus_display() {return & m_parsed_corpus_display;}
     QMap<QString, Entry*>        * get_entry_dict() {return  m_EntryDict;}
     QMap<QString, WordHistory*>  * get_WordHistories() {return & m_WordHistories;};
     //void        open_lexicon();
-    void        add_entry(StringCount);
+    void        add_entry(string_count);
     void        add_entry(Entry*);
     void        add_word(Word*);
-    void        add_word_to_True_Dictionary(QString);
-    void        analyze_line(QString  );
+        void        add_word_to_True_Dictionary(QString);
+        void        analyze_line(QString);
     void        FilterZeroCountEntries(int iteration_number);
     void        ingest_broken_corpus(QString infile_name, int numberoflines = 100);
     void        read_in_broken_corpus(QString infile_name, int numberoflines = 100); //QStringList & original_raw_corpus, int numberoflines = 100);
+    //void        read_broken_corpus(QString infile_name, int numberoflines = 100);
     void        compute_dict_frequencies();
     void        compute_dictionary_length();
     Wordbreaker* get_wordbreaker() {return m_wordbreaker;}
     QMap<QString, Word*> *          get_TrueDictionary() {return m_TrueDictionary;}
     void                            parse_corpus( int  );
-    //QPair<QStringList*,double >     parse_word(QString word );
-    parse_return   parse_word(QString string);
+    parse_return     parse_word(QString word );
     void                            PrintParsedCorpus(QString filenameout);
-    QList<StringCount>                     generate_candidates(int how_many);
+    QList<string_count>                     generate_candidates(int how_many);
 //    void                            Expectation();
 //    void                            Maximization();
     void                            Forward( QString, QMap<int, double>& );

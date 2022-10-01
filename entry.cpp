@@ -8,9 +8,9 @@ Entry::Entry(QString key, int count)
     m_count = count;
     m_frequency = 0.0;
 }
-Entry::Entry(StringCount string_count){
-    m_key = string_count.first;
-    m_count = string_count.second;
+Entry::Entry(string_count this_string_count){
+    m_key = this_string_count.m_string;
+    m_count = this_string_count.m_count;
 }
 Entry::~Entry(){
     for (int n = 0; n < m_history.size(); n++){
