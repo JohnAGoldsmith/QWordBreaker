@@ -29,6 +29,7 @@ class Lexicon : public QObject
 
     Wordbreaker *                   m_wordbreaker;
     MainWindow *                    m_mainwindow;
+    QStringList                     m_corpus_without_spaces;
     Map                             m_LetterDict;
     Map                             m_LetterPlog;
     QMap<QString, Entry*> *         m_EntryDict;
@@ -63,7 +64,7 @@ public:
     explicit Lexicon(Wordbreaker*, QObject *parent = nullptr);
     virtual ~Lexicon() {};
 
-    QStringList                  * get_corpus_without_spaces() {return m_wordbreaker->get_corpus_with_spaces();}
+    QStringList                   get_corpus_without_spaces() {return m_corpus_without_spaces;}
     //QStringList                  * get_original_corpus() {return m_wordbreaker->get_raw_original_corpus();}
     QStringList                  * get_parsed_corpus_display() {return & m_parsed_corpus_display;}
     QMap<QString, Entry*>        * get_entry_dict() {return  m_EntryDict;}

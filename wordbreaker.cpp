@@ -26,7 +26,7 @@ Wordbreaker::Wordbreaker(MainWindow * mainwindow, QObject * parent): QObject(par
 
     m_lexicon               = new Lexicon(this, this);
 
-    m_corpus_model          = new ListModel( &m_raw_original_corpus,  this);
+    m_corpus_model          = new ListModel( &m_corpus_with_spaces,  this);
     m_parsed_corpus_model   = new ListModel( m_lexicon->get_parsed_corpus_display(), this );
     //m_entries_model         = new TableModel( &m_lexicon->m_EntryList, this);
 

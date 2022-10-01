@@ -92,7 +92,7 @@ void Lexicon::read_in_broken_corpus(QString infilename, int numberoflines){ // Q
     while(!in.atEnd()) {
         QString line = in.readLine();
         if (line.length() == 0) {continue;}
-        get_corpus_without_spaces()->append(line);
+        m_wordbreaker->m_corpus_with_spaces.append(line);
     }
     fileIn.close();
 }
@@ -116,7 +116,7 @@ void Lexicon::analyze_line(QString line ){
         breakpoint_list->append( new_line.length() );
     }
     m_true_breakpoint_list.append(* breakpoint_list);
-    get_corpus_without_spaces()->append(new_line);
+    m_corpus_without_spaces.append(new_line);
 }
 void Lexicon::ingest_broken_corpus(QString infilename, int numberoflines) {
 
@@ -124,7 +124,7 @@ void Lexicon::ingest_broken_corpus(QString infilename, int numberoflines) {
 
     //---------- analyze each line  --------------------------------------//
     QStringList  line_list;
-    foreach (QString line, *get_corpus_without_spaces() ) { // *get_original_corpus() ) {            //original_raw_corpus) {
+    foreach (QString line, *m_wordbreaker->get_corpus_with_spaces() ) { // *get_original_corpus() ) {            //original_raw_corpus) {
         QList<int>  breakpoint_list;
         analyze_line(line);
 
@@ -137,7 +137,7 @@ void Lexicon::ingest_broken_corpus(QString infilename, int numberoflines) {
                 m_EntryDict->value(letter)->increment_count(1);
             }
         }
-        if (numberoflines > 0 and  get_corpus_without_spaces()->length() > numberoflines){
+        if (numberoflines > 0 and  m_corpus_without_spaces.length() > numberoflines){
             break;
         }
     }
@@ -261,7 +261,7 @@ void Lexicon::parse_corpus(int current_iteration) {
        QPair<QStringList*,double > pair;
        int lineno = 0;
        WordHistory * word_history;
-       foreach (QString line, *get_corpus_without_spaces()){
+       foreach (QString line, m_corpus_without_spaces){
            m_wordbreaker->m_main_window->m_progress_bar_1->setValue(lineno);
            parse_return  this_parse_return = parse_word(line);
            m_ParsedCorpus.append( this_parse_return.m_parse );
@@ -277,12 +277,8 @@ void Lexicon::parse_corpus(int current_iteration) {
              }
              QList<int> hypothesized_breakpoint_list;
              convert_stringlist_to_breakpoints(this_parse_return.m_parse, hypothesized_breakpoint_list);
-           // ....................................................................................... }
 
-
-
-
-           // iterate through true words:
+             // iterate through true words:
            // { .......................................................................................
            QList<int> true_breakpoint_list;
                                                               // todo make the true_breakpoint list start with zero!
@@ -386,10 +382,6 @@ parse_return Lexicon::parse_word(QString word){
                             LastChunk = Piece;
                             LastChunkStartingPoint = innerscan;
                    }
-               }
-               else
-               {
-                    //if verboseflag: print >>outfile,"   %5s" % "No. ",
                }
         }
         BestCompressedLength[outerscan] = MinimumCompressedSize;
