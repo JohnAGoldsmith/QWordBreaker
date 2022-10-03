@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 6.0.2, 2022-09-30T11:09:48. -->
+<!-- Written by QtCreator 6.0.2, 2022-10-03T17:06:48. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -241,8 +241,9 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/home/john/QWordBreaker/QWordBreaker.pro</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/home/john/QWordBreaker/QWordBreaker.pro</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">QWordBreaker2</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/home/john/Dropbox/projects/TEMP2-wordbreaker/QWordBreaker/QWordBreaker.pro</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/home/john/Dropbox/projects/TEMP2-wordbreaker/QWordBreaker/QWordBreaker.pro</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>

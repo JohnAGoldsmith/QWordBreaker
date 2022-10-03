@@ -59,6 +59,9 @@ class Wordbreaker : public QObject
     QShortcut *     m_keyCtrlO; // open text file
     QShortcut *     m_keyCtrlQ; // quit
     QShortcut *     m_keyCtrlS; // save json file
+    QShortcut *     m_keyCtrlPeriod; // toggle screen
+    QShortcut *     m_keyCtrlComma; // toggle screen backwards
+
 
     //QString       g_encoding 			= "utf8";
     int             m_numberofcycles;

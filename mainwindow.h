@@ -42,6 +42,9 @@ public:
     void        show_selected_entries_on_graph();
     void        show_selected_word_parse_history_on_chart();
 private:
+    int         m_screen_state;
+    int         m_number_of_screen_states;
+
     Ui::MainWindow *ui;
     Wordbreaker * m_wordbreaker;
     QVBoxLayout * m_layout;
@@ -71,5 +74,8 @@ private:
     void place_word_history_in_tablewidget(); // this is triggered by user selecting a new item in the true word widget (widget 2)
     void place_entrydict_on_table_widget(QMap<QString, Entry*> * );
     void            initialize_progress_bar_1();
+    void            toggle_screens();
+    void            toggle_screens_backwards();
+    void            set_screen_state();
 };
 #endif // MAINWINDOW_H

@@ -242,10 +242,6 @@ void Lexicon::parse_corpus(int current_iteration) {
        m_parsed_corpus_display.clear();
        m_CorpusCost = 0.0;
        m_NumberOfHypothesizedRunningWords = 0;
-
-
-
-
        if(true){
            QMapIterator<QString, Entry*> iter(* m_EntryDict);
            while (iter.hasNext() ){
@@ -253,8 +249,6 @@ void Lexicon::parse_corpus(int current_iteration) {
                    iter.value()->set_count(0);
            }
         }
-
-
        QPair<QStringList*,double > pair;
        int lineno = 0;
        WordHistory * word_history;

@@ -15,6 +15,8 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    m_screen_state = 1;
+    m_number_of_screen_states = 2;
     m_layout = new QVBoxLayout(this);
 
     QWidget * widget = new QWidget();
@@ -237,3 +239,54 @@ void MainWindow::initialize_progress_bar_1(){
     m_progress_bar_1->setMinimum(0);
     m_progress_bar_1->setMaximum(m_wordbreaker->get_corpus_with_spaces()->length());
 }
+void MainWindow::toggle_screens_backwards(){
+
+    if (m_screen_state == 1){
+        m_screen_state = m_number_of_screen_states;
+    } else{
+        m_screen_state -= 1;
+    }
+    set_screen_state();
+}
+void MainWindow::toggle_screens(){
+
+    if (m_screen_state == m_number_of_screen_states){
+        m_screen_state = 1;
+    } else{
+        m_screen_state += 1;
+    }
+    set_screen_state();
+}
+void MainWindow::set_screen_state(){
+    switch ( m_screen_state ) {
+        case 1:{
+            m_listview_1->setVisible(true);
+            m_listview_2->setVisible(true);
+            m_iteration_spinbox->setVisible(true);
+            m_progress_bar_2->setVisible(true);
+            m_progress_bar_1->setVisible(true);
+            break;
+        }
+        case 2:{
+            m_progress_bar_2->hide();
+            m_progress_bar_1->hide();
+            m_iteration_spinbox->hide();
+            m_listview_1->hide();
+            m_listview_2->hide();
+            break;
+        }
+        default:
+            {   m_screen_state = 1;
+                m_listview_1->setVisible(true);
+                m_listview_2->setVisible(true);
+                break;
+            }
+    }
+}
+
+
+
+
+
+
+

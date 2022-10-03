@@ -47,12 +47,21 @@ Wordbreaker::Wordbreaker(MainWindow * mainwindow, QObject * parent): QObject(par
     m_keyCtrlS = new QShortcut(mainwindow);
     m_keyCtrlS->setKey(Qt::CTRL + Qt::Key_S);
 
+    m_keyCtrlComma = new QShortcut(mainwindow);
+    m_keyCtrlComma->setKey(Qt::CTRL + Qt::Key_Comma);
+
+    m_keyCtrlPeriod = new QShortcut(mainwindow);
+    m_keyCtrlPeriod->setKey(Qt::CTRL + Qt::Key_Period);
+
     connect( m_keyCtrlA,  &QShortcut::activated, this,  &Wordbreaker::begin );
     connect( m_keyCtrlJ,  &QShortcut::activated, this,  &Wordbreaker::read_json );
     connect( m_keyCtrlO,  &QShortcut::activated, this,  &Wordbreaker::read_json );
 
     connect( m_keyCtrlQ,  &QShortcut::activated, m_lexicon,  &Lexicon::quit  );
     connect( m_keyCtrlS,  &QShortcut::activated, this,  &Wordbreaker::write_wordbreaker_to_json_ask_for_filename );
+
+    connect(m_keyCtrlPeriod, &QShortcut::activated, m_main_window, &MainWindow::toggle_screens ) ;
+    connect(m_keyCtrlComma,  &QShortcut::activated, m_main_window, &MainWindow::toggle_screens_backwards ) ;
 }
 
 void Wordbreaker::begin(){
