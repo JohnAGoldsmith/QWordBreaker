@@ -25,6 +25,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_splitter_top = new QSplitter(Qt::Vertical, this);
     m_layout->addWidget(m_splitter_top);
+
+
         /*
         if (false) {
             m_chart = new QChart();
@@ -47,14 +49,18 @@ MainWindow::MainWindow(QWidget *parent)
     m_splitter_top->addWidget(m_new_chartview);
 
     m_iteration_spinbox  = new QSpinBox(this);
+    m_iteration_spinbox->setMaximumHeight(30);
     m_splitter_top->addWidget(m_iteration_spinbox);
 
     m_progress_bar_1 = new QProgressBar;
-    m_splitter_top->addWidget(m_progress_bar_1);
-
     m_progress_bar_2 = new QProgressBar;
     m_splitter_top->addWidget(m_progress_bar_1);
     m_splitter_top->addWidget(m_progress_bar_2);
+    m_iteration_spinbox->setMaximumHeight(30);
+    m_progress_bar_1->setMaximumHeight(30);
+    m_progress_bar_2->setMaximumHeight(30);
+
+
 
     m_splitter_1 = new QSplitter (Qt::Horizontal,this);
     m_splitter_top->addWidget(m_splitter_1);
@@ -80,6 +86,8 @@ MainWindow::MainWindow(QWidget *parent)
     m_tablewidget_3->setSortingEnabled(false);
 
     m_wordbreaker= new Wordbreaker(this);
+
+
 
     // can I remove ALL of this? on axes :
     m_axis_X = new QValueAxis();
@@ -189,7 +197,7 @@ void MainWindow::show_selected_word_parse_history_on_chart(){
         QList<iteration_based_count*> * IBC_list = & history_of_PC->m_historical_parse_counts;
         for (int n = 0; n < IBC_list->size(); n++){
             series->append(IBC_list->at(n)->m_iteration , IBC_list->at(n)->m_count );
-            qDebug() << 112 << history_of_PC->m_parse  << n << "iteration" << IBC_list->at(n)->m_iteration << "count " << IBC_list->at(n)->m_count;
+            //qDebug() << 112 << history_of_PC->m_parse  << n << "iteration" << IBC_list->at(n)->m_iteration << "count " << IBC_list->at(n)->m_count;
         }
         m_new_chart->addSeries(series);
         temp++;
@@ -273,6 +281,9 @@ void MainWindow::set_screen_state(){
             m_iteration_spinbox->hide();
             m_listview_1->hide();
             m_listview_2->hide();
+            int largeHeight = QGuiApplication::primaryScreen ()->virtualSize ().height ();
+            m_splitter_top->setSizes(QList<int>({100 , 100}));
+
             break;
         }
         default:
