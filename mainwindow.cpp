@@ -6,7 +6,9 @@
 #include <QtCharts/QLineSeries>
 #include <QXYSeries>
 #include <QColor>
+#include <QtGlobal>
 
+#include "mainwindow.h"
 #include "wordbreaker.h"
 #include "wordHistory.h"
 #include "lexicon.h"
@@ -61,7 +63,8 @@ MainWindow::MainWindow(QWidget *parent)
     m_progress_bar_2->setMaximumHeight(30);
 
 
-
+    // bottom half of screen
+    // Corpus:
     m_splitter_1 = new QSplitter (Qt::Horizontal,this);
     m_splitter_top->addWidget(m_splitter_1);
     m_listview_1 = new QListView(this);
@@ -86,7 +89,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_tablewidget_3->setSortingEnabled(false);
 
     m_wordbreaker= new Wordbreaker(this);
-
+    read_in_colors();
 
 
     // can I remove ALL of this? on axes :
@@ -139,6 +142,15 @@ MainWindow::~MainWindow()
 {
     //delete ui;
 }
+void MainWindow::read_in_colors(){
+    //m_colors.append(Qt::red);
+    m_colors.append( Qt::blue);
+    m_colors.append( Qt::green);
+    m_colors.append( Qt::green);
+    m_colors.append( Qt::cyan);
+    m_colors.append( Qt::magenta);
+
+}
 void MainWindow::place_entrydict_on_table_widget( QMap<QString, Entry*> * entry_dict){
     QTableWidget * widget = m_entry_list_tablewidget;
     widget->clear();
@@ -164,20 +176,40 @@ void MainWindow::place_word_history_in_tablewidget( ){
     QTableWidgetItem * item = m_true_word_list_tablewidget->selectedItems().first();
     QString word_text = item->text();
 
-    Word * word = m_wordbreaker->get_lexicon() ->get_TrueDictionary()->value(word_text);
-    WordHistory* word_history = word->get_history();
-    int row_count = word_history->display().length();
-    m_tablewidget_3->setRowCount(row_count);
-    for (auto rowno =0; rowno < row_count; rowno++) {
-        m_tablewidget_3->setItem( rowno, 0, new QTableWidgetItem(word_history->display().at(rowno)) );
+    if (false) {
+        Word * word = m_wordbreaker->get_lexicon() ->get_TrueDictionary()->value(word_text);
+        WordHistory* word_history = word->get_history();
+        int row_count = word_history->display().length();
+        m_tablewidget_3->setRowCount(row_count);
+        for (auto rowno =0; rowno < row_count; rowno++) {
+            m_tablewidget_3->setItem( rowno, 0, new QTableWidgetItem(word_history->display().at(rowno)) );
+        }
     }
 
+    Word * word = m_wordbreaker->get_lexicon() ->get_TrueDictionary()->value(word_text);
+    WordHistory* word_history = word->get_history();
+    qDebug() << word_history->display();
+    QList<QStringList> report = word_history->display_as_table();
+    m_tablewidget_3->setColumnCount(report.size());
+    int number_of_rows = 0;
+    foreach(QStringList row, report){
+        if (row.size() > number_of_rows){
+            number_of_rows = row.size();
+        }
+    }
+    m_tablewidget_3->setRowCount(number_of_rows);
+    for (int col = 0; col < report.size(); col++){
+        QStringList this_column = report.at(col);
+        for (int row = 0; row < this_column.size(); row++){
+            m_tablewidget_3->setItem(row, col,new QTableWidgetItem(this_column.at(row) ) );
+        }
+    }
 }
 void MainWindow::show_selected_word_parse_history_on_chart(){
     //QStringList entry_list;
     m_new_chart->clear();
     int temp = 0;
-
+    int color_index = 0;
     QTableWidgetItem * item = m_true_word_list_tablewidget->selectedItems().first();
     QString word_text = item->text();
     Word * word = m_wordbreaker->get_lexicon() ->get_TrueDictionary()->value(word_text);
@@ -189,11 +221,16 @@ void MainWindow::show_selected_word_parse_history_on_chart(){
         series->setName(parse);
         series->setPointsVisible(true);
         QPen pen = series->pen();
-        pen.setWidth(3);
-        pen.setColor(Qt::red);
+        pen.setWidth(6);
+        if (parse == word_text){
+            color_index = Qt::red;
+        } else {
+            if (color_index == m_colors.size() - 1){
+                color_index = 1;
+            }else{ color_index++;}
+        }
+        pen.setColor(m_colors[color_index]);
         series->setPen(pen);
-        //series->setPointConfiguration();
-        //entry_list.append(entry);
         QList<iteration_based_count*> * IBC_list = & history_of_PC->m_historical_parse_counts;
         for (int n = 0; n < IBC_list->size(); n++){
             series->append(IBC_list->at(n)->m_iteration , IBC_list->at(n)->m_count );
@@ -201,15 +238,16 @@ void MainWindow::show_selected_word_parse_history_on_chart(){
         }
         m_new_chart->addSeries(series);
         temp++;
+
     }
     m_new_chart->createDefaultAxes();
 
     qDebug () << "this many parse histories" << temp;
 }
 
-void MainWindow::show_entries_on_graph(QList<Entry*> * entry_list){
+//void MainWindow::show_entries_on_graph(QList<Entry*> * entry_list){
 
-}
+//}
 /*
 void MainWindow::show_entry_on_graph(Entry* entry){
     if (!entry) { return;}
@@ -281,8 +319,8 @@ void MainWindow::set_screen_state(){
             m_iteration_spinbox->hide();
             m_listview_1->hide();
             m_listview_2->hide();
-            int largeHeight = QGuiApplication::primaryScreen ()->virtualSize ().height ();
-            m_splitter_top->setSizes(QList<int>({100 , 100}));
+            //int largeHeight = QGuiApplication::primaryScreen ()->virtualSize ().height ();
+            //m_splitter_top->setSizes(QList<int>({100 , 100}));
 
             break;
         }

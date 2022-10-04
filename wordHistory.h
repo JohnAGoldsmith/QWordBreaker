@@ -74,12 +74,13 @@ public:
     //remove this:
     void        addTimeWindow(QStringList, timeWindow * );
 
-    QStringList                          display();
-    QString                              get_word() {return m_word;}
-    QList<history_of_ParseCounts*>   *   get_parse_list() {return m_parse_list;}
-    QList< parseTimeWindows *>       *   get_history_old() {return m_history_old;}
+    QStringList                          display() const ;
+    QString                              get_word() const {return m_word;}
+    QList<history_of_ParseCounts*>   *   get_parse_list() const {return m_parse_list;}
+    QList< parseTimeWindows *>       *   get_history_old() const {return m_history_old;}
     //QList< history_of_ParseCounts* >  *   get_history() {return m_history;}
     void                                add_history_of_parse_counts(history_of_ParseCounts*);
+    QList<QStringList>                  display_as_table() const;
 };
 
 

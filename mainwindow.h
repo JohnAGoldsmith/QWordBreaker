@@ -10,6 +10,7 @@
 #include <QTableWidget>
 #include <QAbstractTableModel>
 #include <QtCharts>
+#include <QMap>
 #include "listmodel.h"
 #include "chart.h"
 
@@ -48,6 +49,7 @@ private:
     Ui::MainWindow *ui;
     Wordbreaker * m_wordbreaker;
     QVBoxLayout * m_layout;
+    QList<QColor> m_colors;
 
     Chart       * m_new_chart;
     QChartView  * m_new_chartview;
@@ -77,5 +79,6 @@ private:
     void            toggle_screens();
     void            toggle_screens_backwards();
     void            set_screen_state();
+    void            read_in_colors();
 };
 #endif // MAINWINDOW_H

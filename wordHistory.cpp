@@ -75,7 +75,7 @@ void WordHistory::respond_to_parse_used_on_this_iteration(QStringList parse, int
     return;
 }
 
-QStringList WordHistory::display(){
+QStringList WordHistory::display () const{
     QStringList output;
     QString temp;
     output << m_word;
@@ -89,22 +89,35 @@ QStringList WordHistory::display(){
     //output.clear();
     output << "second part: " +  m_word;
     int previous_count (0);
-    //qDebug() << 92 << m_parse_list->size();
+    qDebug() << 92 << m_parse_list->size();
     foreach(history_of_ParseCounts * history, * m_parse_list){
         output.append(history->m_parse);
-        //qDebug() << 95 << history->m_parse;
-        //qDebug() << 96 << history->m_historical_parse_counts.size();
+        qDebug() << 95 << history->m_parse;
+        qDebug() << 96 << history->m_historical_parse_counts.size();
         foreach (iteration_based_count * count,  history->m_historical_parse_counts ){
-            //qDebug() << 97 << count->m_iteration;
-            //qDebug() << 98 << count->m_count;
-            //qDebug() << 99;
+            qDebug() << 97 << count->m_iteration;
+            qDebug() << 98 << count->m_count;
+            qDebug() << 99;
             output.append(QString::number(count->m_iteration) + ":" + QString::number(count->m_count));
         }
     }
 
-///dd
 
     return output;
+}
+QList<QStringList> WordHistory::display_as_table() const {
+    /* the output is a list of columns, each column is the history of a parse*/
+    QList<QStringList> columns;
+    foreach (history_of_ParseCounts * history, * m_parse_list){
+        QStringList this_column;
+        this_column << history->m_parse;
+        foreach (iteration_based_count * IBC, history->m_historical_parse_counts){
+            this_column.append( QString::number(IBC->m_iteration) + ":" +
+                           QString::number(IBC->m_count));
+        }
+        columns.append(this_column);
+    }
+    return columns;
 }
 void WordHistory::add_history_of_parse_counts(history_of_ParseCounts* HoPC){
     m_parse_list->append(HoPC);
