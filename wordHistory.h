@@ -58,18 +58,6 @@ public:
 };
 
 
-class EntryHistory{
-    // A class to keep track of a hypothetical word's counts on each iteration
-    QString                             m_entry;
-    QList< iteration_based_count  >     m_history;
-   // QList< history_of_ParseCounts * >        * m_parse_list;
-    QMap<QString, history_of_ParseCounts * > * m_parse_map;     // map from a stringified version of the parse to the historicalParseCounts
-
-public:
-          EntryHistory(QString, int, int);
-
-};
-
 
 
 
