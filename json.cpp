@@ -20,6 +20,7 @@ void Lexicon::write_lexicon_to_json(QJsonObject & json_object){
         entry->write_entry_to_json(entries);
     }
     json_object["2-entries"] = entries;
+    json_object["2-1-entries-count"] = m_EntryDict->count();
     QJsonObject words;
     QMapIterator<QString, Word*> iter(*m_TrueDictionary);
     while (iter.hasNext()){
@@ -27,6 +28,7 @@ void Lexicon::write_lexicon_to_json(QJsonObject & json_object){
         iter.value()->write_word_to_json(words);
     }
     json_object["3-words"] = words;
+    json_object["3-1-words-count"] = m_TrueDictionary->count();
 }
 
 void Wordbreaker::write_wordbreaker_to_json_ask_for_filename(){
@@ -75,8 +77,16 @@ void Wordbreaker::read_json(  ){
 
     QByteArray thisData = fileIn.readAll();
     QJsonDocument loadDoc(QJsonDocument::fromJson(thisData));
-    QJsonObject rootItem = loadDoc.object(); // this should be the root item;
+    QJsonObject rootItem = loadDoc.object();
+    int number_of_entries = 0;
+    if (rootItem.contains("2-1-entries-count") ) {
+          number_of_entries = rootItem["2-1-entries-count"].toInt();
+          m_main_window->initialize_progress_bar_1(number_of_entries);
+    }
+
+    int entryno = 0;
     if (rootItem.contains("2-entries") && rootItem["2-entries"].isObject() ){
+        m_main_window->m_progress_bar_1->setValue(++entryno);
         QJsonObject EntriesObject = rootItem["2-entries"].toObject();
         m_lexicon->read_entries_from_json(EntriesObject);
     }

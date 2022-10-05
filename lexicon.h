@@ -101,7 +101,8 @@ public:
     void     read_entries_from_json(QJsonObject & json_object);
     void     read_words_from_json(QJsonObject & words);
     void     copy_entries_to_entrylist();
-    void    set_progress_bar(int i){m_wordbreaker->m_main_window->m_progress_bar_2->setValue(i);}
+    void    set_progress_bar_1(int i){m_wordbreaker->m_main_window->m_progress_bar_1->setValue(i);}
+    void    set_progress_bar_2(int i){m_wordbreaker->m_main_window->m_progress_bar_2->setValue(i);}
 
 public slots:
     void commence();

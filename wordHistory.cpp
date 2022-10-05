@@ -45,6 +45,8 @@ void WordHistory::respond_to_parse_used_on_this_iteration(QStringList parse, int
     } else{
         history_of_parse_counts = m_parse_map->value(parse_string);
         iteration_based_count * last_iteration_count = history_of_parse_counts->m_historical_parse_counts.last();
+        //should become:
+        //if (last_iteration_count->m_
         if (last_iteration_count->m_iteration < iteration){
             iteration_based_count * new_iteration_count = new iteration_based_count(iteration, 1);
             history_of_parse_counts->m_historical_parse_counts.append(new_iteration_count);
@@ -53,6 +55,7 @@ void WordHistory::respond_to_parse_used_on_this_iteration(QStringList parse, int
         }
      }
     // remove all this:
+    /*
     if ( ! m_parseMap_old->contains(parse_string) ){
         timeWindow * time_window = new timeWindow(iteration, 0);
         parseTimeWindows * parse_time_windows = new parseTimeWindows(parse, time_window);
@@ -71,23 +74,13 @@ void WordHistory::respond_to_parse_used_on_this_iteration(QStringList parse, int
         }
         return;
     }
-
+    */
     return;
 }
 
 QStringList WordHistory::display () const{
     QStringList output;
-    QString temp;
     output << m_word;
-    foreach (parseTimeWindows * pTW, * m_history_old){
-        temp =  pTW->m_parse;
-        foreach (timeWindow * tW, pTW->m_timeWindows){
-            temp +=   "   from " + QString::number(tW->m_start) + " to " + QString::number(tW->m_end) + "; ";
-         }
-        output << "  >>  "  + temp;
-    }
-    //output.clear();
-    output << "second part: " +  m_word;
     int previous_count (0);
     qDebug() << 92 << m_parse_list->size();
     foreach(history_of_ParseCounts * history, * m_parse_list){

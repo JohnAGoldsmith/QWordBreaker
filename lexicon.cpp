@@ -20,7 +20,7 @@ Lexicon::Lexicon(Wordbreaker* wordbreaker, QObject *parent):QObject(parent)
 void Lexicon::commence(){
     ingest_broken_corpus(m_wordbreaker->m_corpus_filename, m_wordbreaker->m_numberoflines  );
     for (m_current_iteration = 1; m_current_iteration <= m_wordbreaker-> m_numberofcycles; m_current_iteration++) {
-       set_progress_bar(m_current_iteration);
+       set_progress_bar_2(m_current_iteration);
        generate_candidates(m_wordbreaker-> m_how_many_candidates_per_iteration);
        parse_corpus (m_current_iteration);
        RecallPrecision(m_current_iteration );
@@ -122,7 +122,7 @@ void Lexicon::ingest_broken_corpus(QString infilename, int numberoflines) {
     //---------- analyze each line  --------------------------------------//
     QStringList  line_list;
     foreach (QString line, *m_wordbreaker->get_corpus_with_spaces() ) { // *get_original_corpus() ) {            //original_raw_corpus) {
-        QList<int>  breakpoint_list;
+
         analyze_line(line);
 
         /*  add letters to form the initial set of entries... */
@@ -236,6 +236,9 @@ QStringList find_wordstring_covering_from_wordstart_to_wordend(
 }
 void Lexicon::parse_corpus(int current_iteration) {
        m_mainwindow->initialize_progress_bar_1();
+       QString danger = "QProgressBar::chunk {background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0,stop: 0 #FF0350,stop: 0.4999 #FF0020,stop: 0.5 #FF0019,stop: 1 #FF0000 );border-bottom-right-radius: 5px;border-bottom-left-radius: 5px;border: .px solid black;}";
+       m_mainwindow->m_progress_bar_1->setStyleSheet(danger);
+
        QStringList result;
 
        m_ParsedCorpus.clear();
@@ -383,11 +386,12 @@ parse_return Lexicon::parse_word(QString word){
         }
         Parse[outerscan]->append(LastChunk);
     }
+    bitcost = BestCompressedLength[ wordlength ];
+    parse_return this_parse_return (*Parse[wordlength], bitcost);
     for (int n = 0; n < wordlength; n++){
         delete Parse[n];
     }
-    bitcost = BestCompressedLength[ wordlength ];
-    parse_return this_parse_return (*Parse[wordlength], bitcost);
+
     return this_parse_return;
 }
 bool myLessThan(const string_count s1, const string_count s2){
@@ -398,7 +402,7 @@ QList<string_count> Lexicon::generate_candidates(int how_many){
     QList<string_count> NomineeCountList;
     QList<string_count> NomineeList;
     int repeat_candidate_count(0);
-
+    m_mainwindow->initialize_progress_bar_1();
     foreach(QStringList parsed_line,  m_ParsedCorpus){
         for(int wordno = 0; wordno < parsed_line.length()-1; wordno++){
             QString candidate = parsed_line.at(wordno) + parsed_line.at(wordno + 1);
@@ -522,7 +526,12 @@ void Lexicon::RecallPrecision(int iteration_number ) {
         int total_true_positive_for_break = 0;
         int total_number_of_hypothesized_words = 0;
         int total_number_of_true_words = 0;
+        m_mainwindow->initialize_progress_bar_1(m_true_breakpoint_list.size());
+        QString safe= "QProgressBar::chunk {background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0,stop: 0 #78d,stop: 0.4999 #46a,stop: 0.5 #45a,stop: 1 #238 );border-bottom-right-radius: 7px;border-bottom-left-radius: 7px;border: 1px solid black;}";
+        m_mainwindow->m_progress_bar_1->setStyleSheet(safe);
+
         for (int linenumber = 0; linenumber < m_true_breakpoint_list.length(); linenumber++){
+            m_wordbreaker->m_main_window->m_progress_bar_1->setValue(linenumber);
             QList<int>  truth = m_true_breakpoint_list[linenumber];
             if (truth.length() < 2){
                 //print >>outfile, "Skipping this line:", self.m_Corpus[linenumber];

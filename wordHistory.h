@@ -29,10 +29,12 @@ struct parseTimeWindows{
 };
 struct iteration_based_count{
     int m_iteration;
+    int m_final_iteration;
     int m_count;
     iteration_based_count(int iteration, int count){
         m_iteration = iteration;
         m_count = count;
+        m_final_iteration = iteration;
     }
     void increment_count(int n){
         m_count += n;
