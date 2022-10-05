@@ -75,6 +75,7 @@ public:
     void        add_word(Word*);
         void        add_word_to_True_Dictionary(QString);
         void        analyze_line(QString);
+    void        compress_records();
     void        FilterZeroCountEntries(int iteration_number);
     void        ingest_broken_corpus(QString infile_name, int numberoflines = 100);
     void        read_in_broken_corpus(QString infile_name, int numberoflines = 100); //QStringList & original_raw_corpus, int numberoflines = 100);

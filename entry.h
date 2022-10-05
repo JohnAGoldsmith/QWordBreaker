@@ -30,6 +30,7 @@ public:
     Entry(QString key = "", int count =0);
     Entry (string_count string_count);
     ~Entry();
+    void        compress_histories();
     void        display(int iteration_number, QFile outfile);
     int         get_count() {return m_count;}
     QString     get_key() {return m_key;}

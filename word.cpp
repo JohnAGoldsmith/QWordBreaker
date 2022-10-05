@@ -6,3 +6,6 @@ Word::Word(QString word, int count)
     m_count = count;
     m_history = new WordHistory();
 }
+void Word::compress_histories(){
+
+}

@@ -23,9 +23,21 @@ void Lexicon::commence(){
        set_progress_bar_2(m_current_iteration);
        generate_candidates(m_wordbreaker-> m_how_many_candidates_per_iteration);
        parse_corpus (m_current_iteration);
+       compress_records();
        RecallPrecision(m_current_iteration );
      }
     copy_entries_to_entrylist(); // for qmodel of entries.
+}
+void Lexicon::compress_records(){
+   QMapIterator<QString, Entry*> iter(*m_EntryDict);
+   while (iter.hasNext()){
+        iter.value()->compress_histories();
+   }
+   QMapIterator<QString, Word*> iter2(*m_TrueDictionary);
+   while (iter2.hasNext()){
+        iter2.value()->compress_histories();
+   }
+
 }
 void Lexicon::copy_entries_to_entrylist(){
     m_EntryList.reserve(m_EntryDict->size());

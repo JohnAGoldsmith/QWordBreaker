@@ -17,6 +17,10 @@ Entry::~Entry(){
         delete m_history[n];
     }
 }
+void Entry::compress_histories(){
+
+
+}
 void Entry::place_count_in_history(int iteration){
     if (iteration > 1){
         if (m_history.size() >= 1){

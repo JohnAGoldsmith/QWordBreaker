@@ -6,6 +6,7 @@ class Word
 {
 public:
                             Word(QString, int count = 1);
+    void                    compress_histories();
     WordHistory*            get_history() {return m_history;}
     int                     get_count() {return m_count;}
     QString                 get_key() {return m_key;}

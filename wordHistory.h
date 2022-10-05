@@ -7,26 +7,6 @@
 
 
 
-struct timeWindow{
-    // a pair of integers indicating a sequence of continguous iterations in which the parse was found at least once.
-    // a timeWindow in which the m_end is zero is one which is still in the running: the parse was present on the previous iteration.
-    int m_start;
-    int m_end;
-    timeWindow (int t1, int t2) {m_start = t1; m_end=t2;}
-    bool test_open() {if (m_end == 0) return true; return false;}
-};
-
-struct parseTimeWindows{
-    // this is a struct of the parse and a list of the timeWindows it occurred in
-    QString m_parse;  // this is a stringified version of the parse, using space to mark divisions
-    QList< timeWindow* > m_timeWindows;
-
-    parseTimeWindows(QStringList parse, timeWindow * this_timeWindow){
-        m_parse = parse.join(" ");
-        m_timeWindows.append(this_timeWindow);
-    }
-
-};
 struct iteration_based_count{
     int m_iteration;
     int m_final_iteration;
@@ -65,22 +45,14 @@ class WordHistory{
     QList< history_of_ParseCounts * >        * m_parse_list;
     QMap<QString, history_of_ParseCounts * > * m_parse_map;     // map from a stringified version of the parse to the historicalParseCounts
 
-    QList< parseTimeWindows *  >             * m_history_old;
-    QMap<QString, parseTimeWindows * >       * m_parseMap_old; // map from a stringified version of the parse to the parseTimeWindows
 public:
                 WordHistory(QString word);
                 WordHistory();
     void        respond_to_parse_used_on_this_iteration( QStringList, int );
     bool        test_for_contains_parse( QStringList );
-
-    //remove this:
-    void        addTimeWindow(QStringList, timeWindow * );
-
     QStringList                          display() const ;
     QString                              get_word() const {return m_word;}
     QList<history_of_ParseCounts*>   *   get_parse_list() const {return m_parse_list;}
-    QList< parseTimeWindows *>       *   get_history_old() const {return m_history_old;}
-    //QList< history_of_ParseCounts* >  *   get_history() {return m_history;}
     void                                add_history_of_parse_counts(history_of_ParseCounts*);
     QList<QStringList>                  display_as_table() const;
 };
