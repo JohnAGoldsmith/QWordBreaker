@@ -38,8 +38,8 @@ class Lexicon : public QObject
     QMap<QString, Entry*> *         m_Limbo; // all Entries that have been removed because of zero counts.`
 
     // remove these; they go inside the entries themselves
-    QMap<QString, WordHistory*>     m_EntryHistories; // for hypothesized words
-    QMap<QString, WordHistory*>     m_WordHistories;  // for true words
+    QMap<QString, Parses*>     m_EntryHistories; // for hypothesized words
+    QMap<QString, Parses*>     m_WordHistories;  // for true words
 
     double                          m_DictionaryLength; // = 0   #in bits! Check this is base 2, looks like default base in python
     int                             m_SizeOfLongestEntry;
@@ -68,7 +68,7 @@ public:
     //QStringList                  * get_original_corpus() {return m_wordbreaker->get_raw_original_corpus();}
     QStringList                  * get_parsed_corpus_display() {return & m_parsed_corpus_display;}
     QMap<QString, Entry*>        * get_entry_dict() {return  m_EntryDict;}
-    QMap<QString, WordHistory*>  * get_WordHistories() {return & m_WordHistories;};
+    QMap<QString, Parses*>  * get_WordHistories() {return & m_WordHistories;};
     //void        open_lexicon();
     void        add_entry(string_count);
     void        add_entry(Entry*);

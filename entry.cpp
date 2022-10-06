@@ -21,6 +21,7 @@ void Entry::compress_histories(){
 
 
 }
+/*
 void Entry::place_count_in_history(int iteration){
     if (iteration > 1){
         if (m_history.size() >= 1){
@@ -32,6 +33,7 @@ void Entry::place_count_in_history(int iteration){
     iteration_based_count * this_count = new iteration_based_count (iteration, m_count);
     m_history.append(this_count);
 }
+
 void  Entry::reset_counts(int current_iteration){
     iteration_based_count * pair;
     if (m_history.length() > 0 ){
@@ -47,7 +49,7 @@ void  Entry::reset_counts(int current_iteration){
     }
     m_count = 0;
 }
-
+*/
 
 void Entry::display(int iteration_number, QFile outfile){
     iteration_based_count * pair;

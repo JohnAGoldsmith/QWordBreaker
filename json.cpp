@@ -119,7 +119,7 @@ void Word::read_word_from_json(QJsonObject & json_word){
 
     if (json_word.contains("history") && json_word["history"].isArray()) {
         if (m_history) { delete m_history;}
-        m_history = new WordHistory(m_key);
+        m_history = new Parses(m_key);
         QJsonArray parse_histories = json_word["history"].toArray();
         //qDebug() << 119 <<  m_key;
         for (int parse_no = 0; parse_no < parse_histories.size(); parse_no++) {
@@ -131,7 +131,7 @@ void Word::read_word_from_json(QJsonObject & json_word){
                         //qDebug() << 126 << this_parse;
                         if (this_json_parse_history.contains("history") && this_json_parse_history["history"].isArray() ) {
                             QJsonArray this_history_array = this_json_parse_history["history"].toArray();
-                            history_of_ParseCounts * these_parsecounts  = new history_of_ParseCounts(this_parse);
+                            parse_with_count_history * these_parsecounts  = new parse_with_count_history(this_parse);
                             //qDebug() << 131 << this_parse;
 
                             for (int slice_no = 0; slice_no < this_history_array.size(); slice_no++){
@@ -142,7 +142,7 @@ void Word::read_word_from_json(QJsonObject & json_word){
                                 //qDebug() << 138 << json_slice["iteration"].toInt() <<
                                             139 << json_slice["count"].toInt();
                             }
-                            m_history->add_history_of_parse_counts(these_parsecounts);
+                            m_history->add_parse_with_count_history(these_parsecounts);
 
                             //qDebug() << 142 << m_history->get_word() << m_history->get_parse_list()->size();
                         }
@@ -161,19 +161,19 @@ void Word::write_word_to_json(QJsonObject & words){
     QJsonObject this_word;
     this_word["count"]=  m_count;
     //qDebug() << 157 << m_key;
-    WordHistory * history = get_history();
+    Parses * history = get_history();
     QJsonArray json_parse_histories_1;
-    QList<history_of_ParseCounts*> * parse_list = history->get_parse_list();
+    QList<parse_with_count_history*> * parse_list = history->get_parse_list();
     for (int n = 0; n < parse_list->count(); n++){
         QJsonObject json_parse_history_2;
 
         QString parse = parse_list->at(n)->m_parse;
         json_parse_history_2["parse"] = parse;
 
-        QList< iteration_based_count * > * list = & parse_list->at(n)->m_historical_parse_counts;
+        QList< iteration_based_count * > * list = & parse_list->at(n)->m_history_of_counts;
         QJsonArray json_iter_count_history;
         for (int n2 = 0; n2 < list->size(); n2++ ){
-            int iteration = list->at(n2)->m_iteration;
+            int iteration = list->at(n2)->m_first_iteration;
             int count = list->at(n2)->m_count;
             QJsonObject json_slice;
             json_slice["iteration"] = iteration;
@@ -219,7 +219,7 @@ void Entry::write_entry_to_json(QJsonObject & json_entries){
     QJsonArray count_list;
     for (int n = 0; n < m_history.size(); n++){
         QJsonObject iter_count;
-        iter_count["iteration"] = m_history[n]->m_iteration;
+        iter_count["iteration"] = m_history[n]->m_first_iteration;
         iter_count["count"] = m_history[n]->m_count;
         count_list.append(iter_count);
         //QJsonValue this_count = m_history[n]->m_count;

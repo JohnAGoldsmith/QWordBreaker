@@ -20,8 +20,8 @@ class Entry
                                             // iteration at which this count was found.
                                             // If the count goes up or goes down on a later iteration,
                                             // there will be another pair in the register with that new count at that interation.
-  QList<iteration_based_count* > m_history; // this is a pair (iteration-number, count);
-                                            // in this register, the iteration number is the first
+  QList<iteration_based_count* > m_history; // this is a triple (iteration-number-first, iteration-number-last, count);
+                                            // in this register, the first iteration number is the first
                                             // iteration at which this count was found.
                                             // If the count goes up or goes down on a later iteration,
                                             // there will be another pair in the register with that new count at that interation.
@@ -44,7 +44,7 @@ public:
     void            write_entry_to_json(QJsonObject & );
     void            read_entry_from_json(QJsonObject &);
     QList<iteration_based_count * > *  get_history() {return & m_history;}
-    void            place_count_in_history(int iteration);
+    //void            place_count_in_history(int iteration);
 
 };
 

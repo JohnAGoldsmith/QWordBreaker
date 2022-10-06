@@ -2,99 +2,106 @@
 #include <QDebug>
 
 
-WordHistory::WordHistory(QString word)
+Parses::Parses(QString word)
+{   m_word = word;
+    m_parse_list = new QList< parse_with_count_history * >;
+    m_parse_map = new QMap<QString, parse_with_count_history * > ;
+}
+Parses::Parses()
 {
-    m_word = word;
-    m_parse_list = new QList< history_of_ParseCounts * >;
-    m_parse_map = new QMap<QString, history_of_ParseCounts * > ;
-
-    // remove:
-    //m_history_old = new QList< parseTimeWindows *  >;
-    //m_parseMap_old = new QMap<QString, parseTimeWindows * >;
-
+    m_parse_list = new QList< parse_with_count_history * >;
+    m_parse_map = new QMap<QString, parse_with_count_history * > ;
 }
-WordHistory::WordHistory()
-{
-//    m_word = word;
-    m_parse_list = new QList< history_of_ParseCounts * >;
-    m_parse_map = new QMap<QString, history_of_ParseCounts * > ;
-
-    // remove:
-    //m_history_old = new QList< parseTimeWindows *  >;
-    //m_parseMap_old = new QMap<QString, parseTimeWindows * >;
-
-}
-/*
-bool WordHistory::test_for_contains_parse(QStringList parse){
-    if (m_parseMap_old->contains(parse.join(" "))){
-        return true;
-    }
-    else {return false;}
-}
-*/
-void WordHistory::respond_to_parse_used_on_this_iteration(QStringList parse, int iteration){
+void Parses::respond_to_parse_used_on_this_iteration(QStringList parse, int iteration){
     QString parse_string = parse.join(" ");
-    history_of_ParseCounts * history_of_parse_counts;
-    iteration_based_count * this_iteration_parse_count;
+    parse_with_count_history * this_parse_with_count_history;
     if ( ! m_parse_map->contains(parse_string)){
-        int count = 1;
-        this_iteration_parse_count = new iteration_based_count(iteration, count);
-        history_of_parse_counts = new history_of_ParseCounts(parse_string, this_iteration_parse_count);
-        m_parse_map->insert(parse_string, history_of_parse_counts);
-        m_parse_list->append(history_of_parse_counts);
+        this_parse_with_count_history = new parse_with_count_history(parse_string);
+        this_parse_with_count_history->m_count_on_current_iteration = 1;
+        add_parse_with_count_history(this_parse_with_count_history);
     } else{
-        history_of_parse_counts = m_parse_map->value(parse_string);
-        iteration_based_count * last_iteration_count = history_of_parse_counts->m_historical_parse_counts.last();
-        if (last_iteration_count->m_iteration < iteration){
-            iteration_based_count * new_iteration_count = new iteration_based_count(iteration, 1);
-            history_of_parse_counts->m_historical_parse_counts.append(new_iteration_count);
-        } else{
-            history_of_parse_counts->m_historical_parse_counts.last()->increment_count(1);
-        }
-     }
-
-
+        this_parse_with_count_history = m_parse_map->value(parse_string);
+        this_parse_with_count_history->m_count_on_current_iteration++;
+    }
     return;
 }
 
-QStringList WordHistory::display () const{
+QStringList Parses::display () const{
     QStringList output;
+    qDebug();
     output << m_word;
     int previous_count (0);
-    qDebug() << 92 << m_parse_list->size();
-    foreach(history_of_ParseCounts * history, * m_parse_list){
+    qDebug() << 92  << "number of parses" << m_parse_list->size();
+    int temp = 0;
+    foreach(parse_with_count_history * history, * m_parse_list){
+        qDebug() << 93 << "index" <<  temp++;
         output.append(history->m_parse);
-        qDebug() << 95 << history->m_parse;
-        qDebug() << 96 << history->m_historical_parse_counts.size();
-        foreach (iteration_based_count * count,  history->m_historical_parse_counts ){
-            qDebug() << 97 << count->m_iteration;
-            qDebug() << 98 << count->m_count;
-            qDebug() << 99;
-            output.append(QString::number(count->m_iteration) + ":" + QString::number(count->m_count));
+        qDebug() << 95 << "parse" << history->m_parse;
+        qDebug() << 96 << "number of count records" << history->m_history_of_counts.size();
+        foreach (iteration_based_count * count,  history->m_history_of_counts ){
+            qDebug() << 97 << "first iteration"<< count->m_first_iteration;
+            qDebug() << 98 << "count" <<count->m_count;
+            qDebug() << 99 << "final iteration" << count->m_final_iteration;
+            output.append(QString::number(count->m_first_iteration) + ":" + QString::number(count->m_final_iteration) + "  " + QString::number(count->m_count));
         }
     }
-
-
     return output;
 }
-QList<QStringList> WordHistory::display_as_table() const {
+QList<QStringList> Parses::display_as_table() const {
     /* the output is a list of columns, each column is the history of a parse*/
     QList<QStringList> columns;
-    foreach (history_of_ParseCounts * history, * m_parse_list){
+    foreach (parse_with_count_history * history, * m_parse_list){
         QStringList this_column;
         this_column << history->m_parse;
-        foreach (iteration_based_count * IBC, history->m_historical_parse_counts){
-            this_column.append( QString::number(IBC->m_iteration) + ":" +
-                           QString::number(IBC->m_count));
+        foreach (iteration_based_count * IBC, history->m_history_of_counts){
+            for (int n = IBC->m_first_iteration; n <= IBC->m_final_iteration; n++){
+                this_column.append(QString::number(n) + " " + QString::number(IBC->m_count) );
+            }
         }
         columns.append(this_column);
     }
     return columns;
 }
-void WordHistory::add_history_of_parse_counts(history_of_ParseCounts* HoPC){
-    m_parse_list->append(HoPC);
-    QString parse = HoPC->m_parse;
-    m_parse_map->insert(parse, HoPC);
+void Parses::add_parse_with_count_history(parse_with_count_history* PwCH){
+    QString parse = PwCH->m_parse;
+    if (! m_parse_map->contains(parse)){
+        m_parse_list->append(PwCH);
+        m_parse_map->insert(parse, PwCH);
+    }
+    return;
+}
+void Parses::update_count_history(int current_iteration){
+    // after the iteration is complete, the information for the current iteration is shifted to the history;
+    //qDebug() << 76 << ">>> " << m_word;
+    QListIterator<parse_with_count_history*> iter(* m_parse_list);
+    while(iter.hasNext()){
+        parse_with_count_history * this_parse = iter.next();
+        //qDebug() << 80 << "this parse: " << this_parse->m_parse << "history slices" << this_parse->m_history_of_counts.size();
+        if (this_parse->m_count_on_current_iteration == 0){
+            //qDebug() << 80 <<  "Parse with zero count:" << this_parse->m_parse;
+            continue;
+        }
+        if (this_parse->m_history_of_counts.size() >= 1){
+            int previous_iteration = this_parse->m_history_of_counts.last()->m_final_iteration;
+            int previous_count = this_parse->m_history_of_counts.last()->m_count;
+            if ( previous_iteration == current_iteration - 1 &&
+                 previous_count     == this_parse->m_count_on_current_iteration ){
+                this_parse->m_history_of_counts.last()->m_final_iteration +=1;
+                //qDebug() << "Merge this iteration with previous iteration";
+            } else{ // change in parse count on this iteration
+                iteration_based_count * IBC = new iteration_based_count(current_iteration, this_parse->m_count_on_current_iteration);
+                this_parse->m_history_of_counts.append(IBC);
+                //qDebug() << "New and different count on this iteration";
+            }
+        } else{
+            // no history to this parse.
+            //parse_with_count_history * new_parse_with_history = new parse_with_count_history (this_parse->m_parse);
+            this_parse->add_an_iteration_and_count_to_parse(current_iteration, this_parse->m_count_on_current_iteration);
+            add_parse_with_count_history(this_parse);
+            //qDebug() << 101 << "No history for this parse yet.";
+        }
+        this_parse->m_count_on_current_iteration = 0;
+    }
 }
 
 

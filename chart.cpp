@@ -15,7 +15,7 @@ void Chart::add_entry(Entry* entry){
     m_entries->insert(entry->get_key(), entry);
     QLineSeries *series = new QLineSeries();
     for (int n = 0; n < entry->get_history()->count(); n++){
-        series->append(entry->get_history()->at(n)->m_iteration , entry->get_history()->at(n)->m_count );
+        series->append(entry->get_history()->at(n)->m_first_iteration , entry->get_history()->at(n)->m_count );
     }
     addSeries(series);
     createDefaultAxes();

@@ -23,21 +23,10 @@ void Lexicon::commence(){
        set_progress_bar_2(m_current_iteration);
        generate_candidates(m_wordbreaker-> m_how_many_candidates_per_iteration);
        parse_corpus (m_current_iteration);
-       compress_records();
+       //compress_records();
        RecallPrecision(m_current_iteration );
      }
     copy_entries_to_entrylist(); // for qmodel of entries.
-}
-void Lexicon::compress_records(){
-   QMapIterator<QString, Entry*> iter(*m_EntryDict);
-   while (iter.hasNext()){
-        iter.value()->compress_histories();
-   }
-   QMapIterator<QString, Word*> iter2(*m_TrueDictionary);
-   while (iter2.hasNext()){
-        iter2.value()->compress_histories();
-   }
-
 }
 void Lexicon::copy_entries_to_entrylist(){
     m_EntryList.reserve(m_EntryDict->size());
@@ -74,19 +63,8 @@ void Lexicon::FilterZeroCountEntries(int iteration_number){
                     m_EntryDict->value(key) ) {
                 m_EntryDict->remove(key);
             }
-            //m_DeletionList.append(StringCount(key,iteration_number));
-            //m_DeletionDict[key] = 1;
-            //TempDeletionMap[key] = entry;
         }
     }
-    /*
-    foreach (QString key, TempDeletionMap.keys()){
-        m_EntryDict->remove(key);
-        if (TempDeletionMap.contains(key)){
-            delete TempDeletionMap[key];
-        }
-    }
-    */
  }
 
 void Lexicon::add_word(Word * word){
@@ -266,33 +244,25 @@ void Lexicon::parse_corpus(int current_iteration) {
         }
        QPair<QStringList*,double > pair;
        int lineno = 0;
-       WordHistory * word_history;
+       Parses * word_history;
        foreach (QString line, m_corpus_without_spaces){
            m_wordbreaker->m_main_window->m_progress_bar_1->setValue(lineno);
            parse_return  this_parse_return = parse_word(line);
            m_ParsedCorpus.append( this_parse_return.m_parse );
            m_parsed_corpus_display.append( this_parse_return.m_parse.join(" ") );
            m_CorpusCost += this_parse_return.m_bit_cost;
-
-           // iterate through entries, i.e., hypothetical words:
-           // { .......................................................................................
-           // iterate through entries, i.e., hypothetical words:
-             foreach (QString entry, this_parse_return.m_parse){
+           foreach (QString entry, this_parse_return.m_parse){
                  m_EntryDict->value(entry)->increment_count(1);
                  m_NumberOfHypothesizedRunningWords += 1;
-             }
-             QList<int> hypothesized_breakpoint_list;
-             convert_stringlist_to_breakpoints(this_parse_return.m_parse, hypothesized_breakpoint_list);
+            }
+            QList<int> hypothesized_breakpoint_list;
+            convert_stringlist_to_breakpoints(this_parse_return.m_parse, hypothesized_breakpoint_list);
 
-             // iterate through true words:
-           // { .......................................................................................
-           QList<int> true_breakpoint_list;
-                                                              // todo make the true_breakpoint list start with zero!
+           QList<int> true_breakpoint_list; // todo make the true_breakpoint list start with zero!
            true_breakpoint_list << 0;
            for (int n = 0; n < m_true_breakpoint_list[lineno].length(); n++){
                true_breakpoint_list << m_true_breakpoint_list[lineno].at(n);
            }
-
            result.clear();
            for (int n = 1; n < true_breakpoint_list.length(); n++){
                 int word_start = true_breakpoint_list[n-1];
@@ -308,50 +278,21 @@ void Lexicon::parse_corpus(int current_iteration) {
                                                                    word_end,
                                                                    result);
                 p_word->get_history()->respond_to_parse_used_on_this_iteration(result, current_iteration);
-
-
-
-                 // remove?
-                if (false) {
-                    if (!m_WordHistories.contains(true_word)){
-                        word_history = new WordHistory(true_word);
-                        m_WordHistories.insert(true_word, word_history);
-                    } else{
-                        word_history = m_WordHistories[true_word];
-                    }
-                    word_history->respond_to_parse_used_on_this_iteration(result, current_iteration);
-                }
-                //...................................................................................... }
+                //qDebug() << 281 << true_word << "result" << result;
             }
            lineno++;
        } // end of analyzing one particular line
 
-
-        // This isn't quite right for reporting purposes: we need to know what the previous analyses were...
-       FilterZeroCountEntries(current_iteration);
-
+       FilterZeroCountEntries(current_iteration); // This isn't quite right for reporting purposes: we need to know what the previous analyses were...
        compute_dict_frequencies();
        compute_dictionary_length();
 
-       if (true){
-           QMapIterator<QString, Entry*> iter(* m_EntryDict);
-           while (iter.hasNext()){
-               iter.next();
-               iter.value()->place_count_in_history(current_iteration);
-           }
+       QMapIterator<QString, Word*> iter(*m_TrueDictionary);
+       while(iter.hasNext()){
+           Word* word = iter.next().value();
+           word->get_history()->update_count_history(current_iteration);
        }
-       if(false){
-           QMapIterator<QString, Entry*> iter(* m_EntryDict);
-           if (current_iteration > 0){
-               while (iter.hasNext() ){
-                   iter.next();
-                   iter.value()->reset_counts(current_iteration);
-               }
-           }
-       }
-     // remove this; make it after all the iterations;
-     //m_wordbreaker->m_parsed_corpus_model->emit dataChanged(QModelIndex(), QModelIndex());
-    }
+}
 void Lexicon::PrintParsedCorpus(QString outfile){
             foreach (QStringList line, m_ParsedCorpus){
                 // PrintList(line,outfile);
