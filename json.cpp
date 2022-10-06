@@ -43,7 +43,7 @@ void Wordbreaker::write_wordbreaker_to_json(QString outfilename ){
     QJsonObject toplevel_object;
     QDateTime date = QDateTime::currentDateTime();
     QString formattedTime = date.toString("yyyy_MM_dd_hh:mm:ss");
-    qDebug() << 19 << formattedTime;
+    //qDebug() << 19 << formattedTime;
 
     QJsonObject json_settings;
     //json_settings["filename"] = m_root_folder;
@@ -59,7 +59,7 @@ void Wordbreaker::write_wordbreaker_to_json(QString outfilename ){
          qWarning("Couldn't open save file.");
          return;
     }
-    qDebug() << 610 << outfilename;
+    //qDebug() << 610 << outfilename;
     QJsonDocument doc(toplevel_object);
     saveFile.write(doc.toJson());
 
@@ -140,7 +140,7 @@ void Word::read_word_from_json(QJsonObject & json_word){
                                 these_parsecounts->add_an_iteration_and_count_to_parse(json_slice["iteration"].toInt(), json_slice["count"].toInt() );
                                 //qDebug() << 135 << json_slice["iteration"].toInt() <<  json_slice["count"].toInt() ;
                                 //qDebug() << 138 << json_slice["iteration"].toInt() <<
-                                            139 << json_slice["count"].toInt();
+                                            //139 << json_slice["count"].toInt();
                             }
                             m_history->add_parse_with_count_history(these_parsecounts);
 

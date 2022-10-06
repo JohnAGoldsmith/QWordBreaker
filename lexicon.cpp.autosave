@@ -549,9 +549,7 @@ void Lexicon::RecallPrecision(int iteration_number ) {
                             }
                         }
                         else
-                        {
-                                if (next_truth < next_hypothesis)
-                                {
+                        {if (next_truth < next_hypothesis){
                                     real_word_lag += 1;
                                     state = 1;
                                     //pointer = truth.takeFirst();
@@ -559,9 +557,8 @@ void Lexicon::RecallPrecision(int iteration_number ) {
                                     if (truth.length() == 0){
                                         qDebug() << 504 << "Problem";
                                     }
-                                }
-                                else
-                                {
+                          }
+                          else                          {
                                     //pointer = hypothesis.takeFirst();
                                     hypothesis.removeFirst();
                                     hypothesis_word_lag = 1;

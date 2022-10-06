@@ -177,7 +177,7 @@ void MainWindow::place_word_history_in_tablewidget( ){
     QString word_text = item->text();
     Word * word = m_wordbreaker->get_lexicon() ->get_TrueDictionary()->value(word_text);
     Parses* word_history = word->get_history();
-    qDebug() << 180 << word_history->display();
+    //qDebug() << 180 << word_history->display();
     QList<QStringList> report = word_history->display_as_table();
     m_tablewidget_3->setColumnCount(report.size());
     int number_of_rows = 0;
@@ -235,7 +235,7 @@ void MainWindow::show_selected_word_parse_history_on_chart(){
     }
     m_new_chart->createDefaultAxes();
 
-    qDebug () << "this many parse histories" << temp;
+    //qDebug () << "this many parse histories" << temp;
 }
 
 //void MainWindow::show_entries_on_graph(QList<Entry*> * entry_list){
