@@ -137,7 +137,7 @@ void Word::read_word_from_json(QJsonObject & json_word){
                             for (int slice_no = 0; slice_no < this_history_array.size(); slice_no++){
                                 /*       one slice of the parse's history      */
                                 QJsonObject json_slice = this_history_array[slice_no].toObject();
-                                these_parsecounts->add_an_iteration_and_count_to_parse(json_slice["iteration"].toInt(), json_slice["count"].toInt() );
+                                these_parsecounts->add_an_iteration_and_count_to_parse(json_slice["first_iteration"].toInt(), json_slice["final_iteration"].toInt(), json_slice["count"].toInt() );
                                 //qDebug() << 135 << json_slice["iteration"].toInt() <<  json_slice["count"].toInt() ;
                                 //qDebug() << 138 << json_slice["iteration"].toInt() <<
                                             //139 << json_slice["count"].toInt();
@@ -173,10 +173,12 @@ void Word::write_word_to_json(QJsonObject & words){
         QList< iteration_based_count * > * list = & parse_list->at(n)->m_history_of_counts;
         QJsonArray json_iter_count_history;
         for (int n2 = 0; n2 < list->size(); n2++ ){
-            int iteration = list->at(n2)->m_first_iteration;
+            int first_iteration = list->at(n2)->m_first_iteration;
+            int final_iteration = list->at(n2)->m_final_iteration;
             int count = list->at(n2)->m_count;
             QJsonObject json_slice;
-            json_slice["iteration"] = iteration;
+            json_slice["first_iteration"] = first_iteration;
+            json_slice["final_iteration"] = final_iteration;
             json_slice["count"] = count;
             json_iter_count_history.append(json_slice);
             //qDebug() << 176 << "iteration" <<iteration  << "count" << count;

@@ -96,7 +96,7 @@ void Parses::update_count_history(int current_iteration){
         } else{
             // no history to this parse.
             //parse_with_count_history * new_parse_with_history = new parse_with_count_history (this_parse->m_parse);
-            this_parse->add_an_iteration_and_count_to_parse(current_iteration, this_parse->m_count_on_current_iteration);
+            this_parse->add_an_iteration_and_count_to_parse(current_iteration, current_iteration, this_parse->m_count_on_current_iteration);
             add_parse_with_count_history(this_parse);
             //qDebug() << 101 << "No history for this parse yet.";
         }

@@ -16,6 +16,11 @@ struct iteration_based_count{
         m_count = count;
         m_final_iteration = iteration;
     }
+    iteration_based_count(int first_iteration, int final_iteration, int count){
+        m_first_iteration = first_iteration;
+        m_count = count;
+        m_final_iteration = final_iteration;
+    }
     void increment_count(int n){
         m_count += n;
     }
@@ -36,8 +41,8 @@ struct parse_with_count_history{
         m_parse = parse;
         m_count_on_current_iteration = 0;
     }
-    void add_an_iteration_and_count_to_parse(int iteration, int count){
-        iteration_based_count * this_iteration_count = new iteration_based_count (iteration, count);
+    void add_an_iteration_and_count_to_parse(int initial_iteration, int final_iteration, int count){
+        iteration_based_count * this_iteration_count = new iteration_based_count (initial_iteration, final_iteration,count);
         m_history_of_counts.append(this_iteration_count);
     }
 };

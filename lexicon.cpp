@@ -162,6 +162,7 @@ void Lexicon::compute_dictionary_length(){
         QMapIterator<QString, Entry*> iter(*m_EntryDict);
         while(iter.hasNext()){
             iter.next();
+            if (iter.value()->get_count() == 0){ continue; }
             int wordlength = 0;
             foreach (QString letter, iter.key().split("") ){
                 if (iter.key().length() == 0) {continue;}   // QString split on null string puts a null string at beginning and end;
@@ -359,22 +360,15 @@ QList<string_count> Lexicon::generate_candidates(int how_many){
     foreach(QStringList parsed_line,  m_ParsedCorpus){
         for(int wordno = 0; wordno < parsed_line.length()-1; wordno++){
             QString candidate = parsed_line.at(wordno) + parsed_line.at(wordno + 1);
-            if  ( m_EntryDict->contains(candidate) ) {
-                  if (m_EntryDict->contains(candidate)) {
-                        continue;
-                  }
-            }
-            if (NomineesMap.contains(candidate)){
-                NomineesMap[candidate] += 1;
-            }
-            else{
-                NomineesMap[candidate] = 1;
-            }
+            if  ( m_EntryDict->contains(candidate) )
+            {   continue; }
+            if (NomineesMap.contains(candidate))
+            {   NomineesMap[candidate] += 1; }
+            else{ NomineesMap[candidate] = 1;  }
         }
     }
     foreach (QString nominee, NomineesMap.keys()){
         NomineeCountList.append(string_count(nominee, NomineesMap[nominee] ) );
-
     }
     std::sort (NomineeCountList.begin(), NomineeCountList.end(), myLessThan);
     foreach (string_count nominee, NomineeCountList){
@@ -390,6 +384,7 @@ QList<string_count> Lexicon::generate_candidates(int how_many){
 
     QStringList latex_data;
     foreach(string_count nominee, NomineeList ){
+        qDebug() << 394 << nominee.m_string << nominee.m_count;
         add_entry(nominee);
     }
     compute_dict_frequencies();
@@ -548,33 +543,27 @@ void Lexicon::RecallPrecision(int iteration_number ) {
                                 break;
                             }
                         }
-                        else
-                        {
-                                if (next_truth < next_hypothesis)
-                                {
+                        else {
+                            if (next_truth < next_hypothesis){
                                     real_word_lag += 1;
-                                    state = 1;
-                                    //pointer = truth.takeFirst();
+                                    state = 1;                                   
                                     truth.removeFirst();
                                     if (truth.length() == 0){
                                         qDebug() << 504 << "Problem";
                                     }
-                                }
-                                else
-                                {
-                                    //pointer = hypothesis.takeFirst();
-                                    hypothesis.removeFirst();
-                                    hypothesis_word_lag = 1;
-                                    state = 2;
-                                    if (hypothesis.length() == 0){
-                                        qDebug() << 513 << "Problem";
-                                    }
-                                }
+                            } else {
+                                hypothesis.removeFirst();
+                                hypothesis_word_lag = 1;
+                                state = 2;
+                                if (hypothesis.length() == 0){
+                                   qDebug() << 513 << "Problem";
+                                 }
+                            }
                         }
                         break;
-                    }
-                    case 1:
-                    {
+                     }
+                     case 1:
+                     {
                         if (next_truth == next_hypothesis){
                             true_positive_for_break += 1;
                             word_too_big += 1;
@@ -584,8 +573,6 @@ void Lexicon::RecallPrecision(int iteration_number ) {
                             }
                             pointer = truth.takeFirst();
                             hypothesis.removeFirst();
-                            //qDebug() << "Correct break 2: "<< this_line.mid(0,next_hypothesis);
-
                         }
                         else
                         {
@@ -605,14 +592,13 @@ void Lexicon::RecallPrecision(int iteration_number ) {
                               if (hypothesis.length() == 0){
                                   qDebug() << 548 << "Problem";
                               }
-                              //pointer = hypothesis.takeFirst();
                               hypothesis.removeFirst();
                            }
                         }
                         break;
-                    }
-                    case 2:
-                    {
+                     }
+                     case 2:
+                     {
                         if (next_truth == next_hypothesis){
                             true_positive_for_break += 1;
                             word_too_small +=1;
@@ -620,15 +606,11 @@ void Lexicon::RecallPrecision(int iteration_number ) {
                             if (truth.length() == 0 && hypothesis.length() == 0){
                                 break;
                             }
-                            //pointer = truth.takeFirst();
                             truth.removeFirst();
                             hypothesis.removeFirst();
-                            //qDebug() << "Correct break 3: "<< this_line.mid(0,next_hypothesis);
-
                         }
                         else
-                        {
-                            if (next_truth < next_hypothesis)
+                        {   if (next_truth < next_hypothesis)
                             {
                                 real_word_lag += 1;
                                 state = 1;
@@ -636,24 +618,19 @@ void Lexicon::RecallPrecision(int iteration_number ) {
                                     qDebug() << 576 << "Problem";
                                 }
                                 pointer = truth.takeFirst();
-
                             }
                             else
-                            {
-                                hypothesis_word_lag += 1;
+                            {   hypothesis_word_lag += 1;
                                 state =2;
                                 if (hypothesis.length() == 0){
                                     qDebug() << 586 << "Problem";
                                 }
                                 pointer = hypothesis.takeFirst();
-
                             }
                         }
                         break;
-                    }
-                    default:{
-
-                    }
+                     }
+                     default:{     }
                 } // end of switch statement.
             }
             float precision = float(true_positive_for_break) /  number_of_hypothesized_words;
@@ -717,7 +694,6 @@ void Lexicon::RecallPrecision(int iteration_number ) {
         }
 
 }
-//void Lexicon::put_wordlist_on_tablewidget(QMap<QString, Word* > * wordlist, QTableWidget* widget){
 void Lexicon::put_wordlist_on_tablewidget(QTableWidget* widget){
     int row(0);
     widget->clear();
@@ -725,10 +701,8 @@ void Lexicon::put_wordlist_on_tablewidget(QTableWidget* widget){
     foreach (QString word,  m_TrueDictionary->keys()){
         QTableWidgetItem* item = new QTableWidgetItem(word);
         widget->setItem(row,0,item);
-        //qDebug() << 868 << m_TrueDictionary->value(word)->get_count() << m_TrueDictionary->value(word)->get_key();
         item = new QTableWidgetItem(QString::number(m_TrueDictionary->value(word)->get_count()));
         widget->setItem(row,1,item);
-
         row++;
     }
 }
