@@ -82,6 +82,7 @@ public:
     //void        read_broken_corpus(QString infile_name, int numberoflines = 100);
     void        compute_dict_frequencies();
     void        compute_dictionary_length();
+    double      from_string_to_bits(QString string);
     Wordbreaker* get_wordbreaker() {return m_wordbreaker;}
     QMap<QString, Word*> *          get_TrueDictionary() {return m_TrueDictionary;}
     void                            parse_corpus( int  );

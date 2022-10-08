@@ -156,19 +156,19 @@ void Lexicon::compute_dict_frequencies(){
             m_LetterPlog[letter] = -1.0 * log(m_LetterDict[letter]);
         }
 }
-
+double Lexicon::from_string_to_bits(QString string){
+    double wordlength = 0.0;
+    for (int n = 0; n < string.length(); n++){
+         wordlength += m_LetterPlog[string.at(n)];
+    }
+    return wordlength;
+}
 void Lexicon::compute_dictionary_length(){
         double DictionaryLength = 0.0;
         QMapIterator<QString, Entry*> iter(*m_EntryDict);
         while(iter.hasNext()){
-            iter.next();
-            if (iter.value()->get_count() == 0){ continue; }
-            int wordlength = 0;
-            foreach (QString letter, iter.key().split("") ){
-                if (iter.key().length() == 0) {continue;}   // QString split on null string puts a null string at beginning and end;
-                wordlength += m_LetterPlog[letter];
-            }
-            DictionaryLength += wordlength;
+            if (iter.next().value()->get_count() == 0){ continue; }
+            DictionaryLength += from_string_to_bits(iter.key());
         }
         m_DictionaryLength = DictionaryLength;
         m_DictionaryLengthHistory.append(DictionaryLength);
@@ -243,9 +243,9 @@ void Lexicon::parse_corpus(int current_iteration) {
                    iter.value()->set_count(0);
            }
         }
-       QPair<QStringList*,double > pair;
+       //QPair<QStringList*,double > pair;
        int lineno = 0;
-       Parses * word_history;
+       //Parses * word_history;
        foreach (QString line, m_corpus_without_spaces){
            m_wordbreaker->m_main_window->m_progress_bar_1->setValue(lineno);
            parse_return  this_parse_return = parse_word(line);
