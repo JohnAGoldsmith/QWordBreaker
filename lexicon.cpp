@@ -28,6 +28,17 @@ void Lexicon::commence(){
      }
     copy_entries_to_entrylist(); // for qmodel of entries.
 }
+void Lexicon::commence2(){
+    ingest_broken_corpus(m_wordbreaker->m_corpus_filename, m_wordbreaker->m_numberoflines  );
+    for (m_current_iteration = 1; m_current_iteration <= m_wordbreaker-> m_numberofcycles; m_current_iteration++) {
+       set_progress_bar_2(m_current_iteration);
+       generate_candidates(m_wordbreaker-> m_how_many_candidates_per_iteration);
+       parse_corpus (m_current_iteration);
+       //temporarily remove:
+       //RecallPrecision(m_current_iteration );
+     }
+    copy_entries_to_entrylist(); // for qmodel of entries.
+}
 void Lexicon::copy_entries_to_entrylist(){
     m_EntryList.reserve(m_EntryDict->size());
     QMapIterator<QString, Entry*>  iter(*m_EntryDict);
