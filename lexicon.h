@@ -21,6 +21,8 @@ struct parse_return {
         m_bit_cost = bit_cost;
     }
 };
+struct Nominee;
+
 class Lexicon : public QObject
 {
     friend Wordbreaker;
@@ -36,6 +38,8 @@ class Lexicon : public QObject
     QList <string_count*>           m_EntryList; // for use in Model
     QMap<QString, Word*> *          m_TrueDictionary;
     QMap<QString, Entry*> *         m_Limbo; // all Entries that have been removed because of zero counts.`
+    QList<Nominee*>                 m_CurrentCandidates;
+    int                             m_entries_token_count;
 
     // remove these; they go inside the entries themselves
     QMap<QString, Parses*>     m_EntryHistories; // for hypothesized words
@@ -72,10 +76,12 @@ public:
     void                    compress_records();
     void                    compute_dict_frequencies();
     void                    compute_dictionary_length();
+    int                     compute_number_of_candidates_per_iteration();
     void                    copy_entries_to_entrylist();
     void                    FilterZeroCountEntries(int iteration_number);
     double                  from_string_to_bits(QString string);
     QList<string_count>     generate_candidates(int how_many);
+    void                    generate_candidates2(int how_many);
     Wordbreaker     *       get_wordbreaker() {return m_wordbreaker;}
     QMap<QString, Word*> *  get_TrueDictionary() {return m_TrueDictionary;}
     QStringList             get_corpus_without_spaces() {return m_corpus_without_spaces;}

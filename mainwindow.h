@@ -19,9 +19,6 @@ class Wordbreaker;
 class QSpinBox;
 class Entry;
 
-typedef QMap<QString, double> Map;
-//typedef QPair<QString, int> StringCount;
-typedef QPair<QString, double> StringDouble;
 
 
 QT_BEGIN_NAMESPACE

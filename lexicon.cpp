@@ -16,6 +16,7 @@ Lexicon::Lexicon(Wordbreaker* wordbreaker, QObject *parent):QObject(parent)
     m_SizeOfLongestEntry = 1;
     m_wordbreaker->m_main_window->m_progress_bar_2->setMinimum(0);
     m_wordbreaker->m_main_window->m_progress_bar_2->setMaximum(m_wordbreaker->m_numberofcycles-1);
+    m_entries_token_count = 0.0;
 }
 void Lexicon::commence(){
     ingest_broken_corpus(m_wordbreaker->m_corpus_filename, m_wordbreaker->m_numberoflines  );
@@ -28,17 +29,7 @@ void Lexicon::commence(){
      }
     copy_entries_to_entrylist(); // for qmodel of entries.
 }
-void Lexicon::commence2(){
-    ingest_broken_corpus(m_wordbreaker->m_corpus_filename, m_wordbreaker->m_numberoflines  );
-    for (m_current_iteration = 1; m_current_iteration <= m_wordbreaker-> m_numberofcycles; m_current_iteration++) {
-       set_progress_bar_2(m_current_iteration);
-       generate_candidates(m_wordbreaker-> m_how_many_candidates_per_iteration);
-       parse_corpus (m_current_iteration);
-       //temporarily remove:
-       //RecallPrecision(m_current_iteration );
-     }
-    copy_entries_to_entrylist(); // for qmodel of entries.
-}
+
 void Lexicon::copy_entries_to_entrylist(){
     m_EntryList.reserve(m_EntryDict->size());
     QMapIterator<QString, Entry*>  iter(*m_EntryDict);
@@ -131,7 +122,7 @@ void Lexicon::ingest_broken_corpus(QString infilename, int numberoflines) {
             if (! m_EntryDict->contains(letter) ) {
                 Entry* this_entry = new Entry(letter, 1);
                 m_EntryDict->insert(letter, this_entry);
-            } else {
+             } else {
                 m_EntryDict->value(letter)->increment_count(1);
             }
         }
@@ -151,14 +142,14 @@ void Lexicon::ingest_broken_corpus(QString infilename, int numberoflines) {
 }
 
 void Lexicon::compute_dict_frequencies(){
-        double  TotalCount = 0.0;
+        m_entries_token_count = 0.0;
         foreach (QString key, m_EntryDict->keys()){
-          TotalCount += m_EntryDict->value(key)->get_count();
+          m_entries_token_count += m_EntryDict->value(key)->get_count();
         }
         foreach (QString key, m_EntryDict->keys()){
-            m_EntryDict->value(key)->set_frequency( m_EntryDict->value(key)->get_count() / TotalCount );
+            m_EntryDict->value(key)->set_frequency( m_EntryDict->value(key)->get_count() / m_entries_token_count );
         }
-        TotalCount = 0.0;
+        double TotalCount = 0.0;
         foreach (QString letter, m_LetterDict.keys()){
             TotalCount += m_LetterDict[letter];
         }

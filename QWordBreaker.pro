@@ -15,6 +15,7 @@ SOURCES += \
     entry.cpp \
     json.cpp \
     lexicon.cpp \
+    lexicon2.cpp \
     listmodel.cpp \
     main.cpp \
     mainwindow.cpp \

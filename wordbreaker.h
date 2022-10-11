@@ -20,11 +20,19 @@
 class Lexicon;
 class TableModel;
 
+typedef QMap<QString, double> Map;
 
 struct string_count{
     QString m_string;
     int     m_count;
       string_count(QString s, int c) {m_string = s; m_count = c;}
+      string_count() {m_string = ""; m_count = 0;}
+      void operator= (string_count sc) {m_string = sc.m_string; m_count = sc.m_count; }
+};
+struct string_value{
+    QString m_string;
+    double  m_value;
+    string_value(QString s, double v) {m_string = s; m_value = v;}
 };
 
 struct   EvaluationTriple{
