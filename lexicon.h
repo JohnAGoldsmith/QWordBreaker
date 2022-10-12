@@ -72,7 +72,7 @@ public:
     void                    add_entry(Entry*);
     void                    add_word(Word*);
     void                    add_word_to_True_Dictionary(QString);
-    void                    analyze_line(QString);
+    QString                 analyze_line(QString);
     void                    compress_records();
     void                    compute_dict_frequencies();
     void                    compute_dictionary_length();

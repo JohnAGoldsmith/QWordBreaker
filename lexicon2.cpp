@@ -75,6 +75,9 @@ void create_nominee_map(QMap<QString, Entry*> * EntryDict, QMap<QString, Nominee
         QString candidate = entry1->get_key() +  entry2->get_key();
         if  ( EntryDict->contains(candidate) )
         {   continue; }
+        if (candidate == " " || candidate == "  "){
+            int i = 1;
+        }
         if (NomineeMap.contains(candidate))
         {  NomineeMap[candidate]->increment_count(1);
         }
@@ -83,6 +86,7 @@ void create_nominee_map(QMap<QString, Entry*> * EntryDict, QMap<QString, Nominee
             string_count string_count_2 (entry2->get_key(), entry2->get_count() );
             Nominee * the_nominee = new Nominee(candidate, 1, string_count_1, string_count_2);
             NomineeMap[candidate] = the_nominee;
+            qDebug() << 89 << candidate;
         }
     }
     return;
@@ -120,9 +124,14 @@ void Lexicon::generate_candidates2(int how_many){
             break;
         }
     }
+    qDebug() << 123;
     foreach(Nominee * nominee, m_CurrentCandidates ){
         qDebug() << 120 << nominee->m_string << nominee->m_count <<  nominee->m_weightedMI;
+        if (nominee->m_string == " "){
+            int j = 0;
+        }
         add_entry(string_count(nominee->m_string, nominee->m_count));
+        qDebug() << 133 << nominee->m_string << nominee->m_count;
         delete nominee;
     }
     qDebug() << "--------------------------";

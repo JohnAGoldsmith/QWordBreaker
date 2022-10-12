@@ -195,9 +195,7 @@ void MainWindow::place_word_history_in_tablewidget( ){
     }
 }
 void MainWindow::show_selected_word_parse_history_on_chart(){
-    //QStringList entry_list;
     m_new_chart->clear();
-    int temp = 0;
     int color_index = 0;
     QTableWidgetItem * item = m_true_word_list_tablewidget->selectedItems().first();
     QString word_text = item->text();
@@ -230,49 +228,39 @@ void MainWindow::show_selected_word_parse_history_on_chart(){
             }
         }
         m_new_chart->addSeries(series);
-        temp++;
 
     }
     m_new_chart->createDefaultAxes();
-
-    //qDebug () << "this many parse histories" << temp;
 }
 
-//void MainWindow::show_entries_on_graph(QList<Entry*> * entry_list){
 
-//}
-/*
-void MainWindow::show_entry_on_graph(Entry* entry){
-    if (!entry) { return;}
-    QString entry_text = entry->get_key();
-    QLineSeries *series = new QLineSeries();
-    for (int n = 0; n < entry->get_history()->count(); n++){
-        series->append(entry->get_history()->at(n)->m_iteration , entry->get_history()->at(n)->m_count );
-    }
-    m_chart->addSeries(series);
-    m_chart->createDefaultAxes();
-}
-*/
 void MainWindow::show_selected_entries_on_graph(){
-    foreach(QTableWidgetItem * item, m_entry_list_tablewidget->selectedItems()){
-        QString entry_text = item->text();
-        Entry* entry = m_wordbreaker->get_lexicon()->get_entry_dict()->value(entry_text);
-        if (!entry) { continue;}
-
-        //show_entry_on_graph(entry);
-        m_new_chart->add_entry(entry);
-
-        /*
-        if (false) {
-            QLineSeries *series = new QLineSeries();
-            for (int n = 0; n < entry->get_history()->count(); n++){
-                series->append(entry->get_history()->at(n)->m_iteration , entry->get_history()->at(n)->m_count );
-            }
-            m_chart->addSeries(series);
+    //m_new_chart->clear();
+    int color_index = 0;
+    QTableWidgetItem * item = m_entry_list_tablewidget->selectedItems().first();
+    QString entry_text = item->text();
+    Entry * entry = m_wordbreaker->get_lexicon() ->get_entry_dict()->value(entry_text);
+    QLineSeries *series = new QLineSeries();
+    series->setName(entry->get_key());
+    series->setPointsVisible(true);
+    QPen pen = series->pen();
+    pen.setWidth(6);
+    QColor this_color;
+    if (color_index >= m_colors.size() - 1){
+          color_index = 0;
+    }else{ color_index++;}
+    this_color = m_colors[color_index];
+    pen.setColor(this_color);
+    series->setPen(pen);
+    for (int n = 0; n < entry->get_history()->size(); n++){
+        for (int m = entry->get_history()->at(n)->m_first_iteration;
+                 m <= entry->get_history()->at(n)->m_final_iteration;
+                 m++) {
+             series->append(m, entry->get_history()->at(n)->m_count);
         }
-        */
     }
-    //m_chart->createDefaultAxes();
+    m_new_chart->addSeries(series);
+    m_new_chart->createDefaultAxes();
 }
 void MainWindow::initialize_progress_bar_1(int value){
     m_progress_bar_1->setMinimum(0);

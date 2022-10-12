@@ -40,7 +40,7 @@ void Entry::update_count_history(int current_iteration){
         iteration_based_count * IBC = new iteration_based_count (current_iteration, current_iteration, m_count);
         m_history.append(IBC);
     }
-    m_count = 0;
+    //m_count = 0;
 }
 
 

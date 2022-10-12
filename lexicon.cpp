@@ -94,7 +94,7 @@ void  Lexicon::add_word_to_True_Dictionary(QString string){
         m_TrueDictionary->value(string)->increment_count(1);
     }
 }
-void Lexicon::analyze_line(QString line ){
+QString Lexicon::analyze_line(QString line ){
     QStringList line_list = line.split(' ', QString::SkipEmptyParts);
     QList<int> * breakpoint_list = new QList<int>;
     QString new_line;
@@ -106,6 +106,7 @@ void Lexicon::analyze_line(QString line ){
     }
     m_true_breakpoint_list.append(* breakpoint_list);
     m_corpus_without_spaces.append(new_line);
+    return new_line;
 }
 void Lexicon::ingest_broken_corpus(QString infilename, int numberoflines) {
 
@@ -114,11 +115,11 @@ void Lexicon::ingest_broken_corpus(QString infilename, int numberoflines) {
     //---------- analyze each line  --------------------------------------//
     QStringList  line_list;
     foreach (QString line, *m_wordbreaker->get_corpus_with_spaces() ) { // *get_original_corpus() ) {            //original_raw_corpus) {
-
-        analyze_line(line);
+        QString line_without_spaces;
+        line_without_spaces = analyze_line(line);
 
         /*  add letters to form the initial set of entries... */
-        foreach (QString letter, line) {
+        foreach (QString letter, line_without_spaces) {
             if (! m_EntryDict->contains(letter) ) {
                 Entry* this_entry = new Entry(letter, 1);
                 m_EntryDict->insert(letter, this_entry);
@@ -143,20 +144,29 @@ void Lexicon::ingest_broken_corpus(QString infilename, int numberoflines) {
 
 void Lexicon::compute_dict_frequencies(){
         m_entries_token_count = 0.0;
-        foreach (QString key, m_EntryDict->keys()){
-          m_entries_token_count += m_EntryDict->value(key)->get_count();
+        QMapIterator<QString,Entry*> iter1(*m_EntryDict);
+        while (iter1.hasNext()){
+            m_entries_token_count += iter1.next().value()->get_count();
         }
-        foreach (QString key, m_EntryDict->keys()){
-            m_EntryDict->value(key)->set_frequency( m_EntryDict->value(key)->get_count() / m_entries_token_count );
+        QMapIterator<QString,Entry*> iter2(*m_EntryDict);
+        while(iter2.hasNext()){
+            iter2.next();
+            qDebug() << 153 << iter2.value()->get_key() <<  iter2.value()->get_count();
+            iter2.value()->set_frequency(iter2.value()->get_count() / m_entries_token_count );
         }
         double TotalCount = 0.0;
-        foreach (QString letter, m_LetterDict.keys()){
-            TotalCount += m_LetterDict[letter];
+        qDebug() << 157;
+        QMapIterator<QString, double> iter3(m_LetterDict);
+        while (iter3.hasNext()){
+            TotalCount += iter3.next().value();
         }
-        foreach (QString letter, m_LetterDict.keys() ) {
-            m_LetterDict[letter] /= TotalCount;
-            m_LetterPlog[letter] = -1.0 * log(m_LetterDict[letter]);
+        QMapIterator<QString, double> iter4(m_LetterDict);
+        while (iter4.hasNext()){
+            iter4.next();
+            m_LetterDict[iter4.key()] /= TotalCount;
+            m_LetterPlog[iter4.key()] = -1.0 * log(m_LetterDict[iter4.key()]);
         }
+        qDebug() << 168;
 }
 double Lexicon::from_string_to_bits(QString string){
     double wordlength = 0.0;
@@ -238,19 +248,18 @@ void Lexicon::parse_corpus(int current_iteration) {
        m_parsed_corpus_display.clear();
        m_CorpusCost = 0.0;
        m_NumberOfHypothesizedRunningWords = 0;
-       if(true){
-           QMapIterator<QString, Entry*> iter(* m_EntryDict);
-           while (iter.hasNext() ){
-                   iter.next();
-                   iter.value()->set_count(0);
-           }
-        }        
+       QMapIterator<QString, Entry*> iter(* m_EntryDict);
+       while (iter.hasNext() ){
+           iter.next().value()->set_count(0);
+       }
        int lineno = 0;
        foreach (QString line, m_corpus_without_spaces){
            m_wordbreaker->m_main_window->m_progress_bar_1->setValue(lineno);
            parse_return  this_parse_return = parse_word(line);
            m_ParsedCorpus.append( this_parse_return.m_parse );
-           m_parsed_corpus_display.append( this_parse_return.m_parse.join(" ") );
+           if (current_iteration == m_wordbreaker->get_number_of_iterations() ) {
+               m_parsed_corpus_display.append( this_parse_return.m_parse.join(" ") );
+           }
            m_CorpusCost += this_parse_return.m_bit_cost;
            foreach (QString entry, this_parse_return.m_parse){
                  m_EntryDict->value(entry)->increment_count(1);
@@ -270,8 +279,7 @@ void Lexicon::parse_corpus(int current_iteration) {
                 int word_end = true_breakpoint_list[n];
                 QString true_word = line.mid(word_start, word_end - word_start);
                 Word * p_word = m_TrueDictionary->value(true_word);
-                if ( ! p_word ) {
-                    qDebug() << 396 << "Problem! Real word not present in QMap keys." << true_word;
+                if ( ! p_word ) { qDebug() << 396 << "Problem! Real word not present in QMap keys." << true_word;
                 }
                 find_wordstring_covering_from_wordstart_to_wordend(hypothesized_breakpoint_list,
                                                                    line,
@@ -288,10 +296,15 @@ void Lexicon::parse_corpus(int current_iteration) {
        compute_dict_frequencies();
        compute_dictionary_length();
 
-       QMapIterator<QString, Word*> iter(*m_TrueDictionary);
-       while(iter.hasNext()){
-           Word* word = iter.next().value();
+       QMapIterator<QString, Word*> iter_dict(*m_TrueDictionary);
+       while(iter_dict.hasNext()){
+           Word* word = iter_dict.next().value();
            word->get_history()->update_count_history(current_iteration);
+       }
+       QMapIterator<QString, Entry*> iter_entry(*m_EntryDict);
+       while (iter_entry.hasNext()){
+           Entry* entry = iter_entry.next().value();
+           entry->update_count_history(current_iteration);
        }
 }
 void Lexicon::PrintParsedCorpus(QString outfile){
