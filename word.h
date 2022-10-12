@@ -12,6 +12,7 @@ public:
     void                    increment_count (int n = 1) {m_count += n;}
     void                    write_word_to_json(QJsonObject &);
     void                    read_word_from_json(QJsonObject &);
+    void                    update_count_history(int current_iteration);
 
 private:
     QString                 m_key;

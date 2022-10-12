@@ -62,8 +62,8 @@ struct Nominee {
 int Lexicon::compute_number_of_candidates_per_iteration(){
     return 10;
 }
-bool myLessThan_2(const Nominee s1, const Nominee s2){
-    return s1.m_weightedMI >  s2.m_weightedMI;
+bool myLessThan_2(const Nominee* s1, const Nominee* s2){
+    return s1->m_weightedMI >  s2->m_weightedMI;
 }
 void create_nominee_map(QMap<QString, Entry*> * EntryDict, QMap<QString, Nominee*>& NomineeMap, QStringList line ){
     const int COUNT_THRESHOLD (5);
@@ -72,7 +72,7 @@ void create_nominee_map(QMap<QString, Entry*> * EntryDict, QMap<QString, Nominee
         if (entry1->get_count() < COUNT_THRESHOLD) {continue;}
         Entry * entry2 = EntryDict->value( line.at(wordno + 1) );
         if (entry2->get_count() < COUNT_THRESHOLD) {continue;}
-        QString candidate = entry1->get_key() + "_" + entry2->get_key();
+        QString candidate = entry1->get_key() +  entry2->get_key();
         if  ( EntryDict->contains(candidate) )
         {   continue; }
         if (NomineeMap.contains(candidate))
@@ -97,18 +97,22 @@ void Lexicon::generate_candidates2(int how_many){
     QMapIterator<QString, Nominee*> iter(NomineeMap);
     while(iter.hasNext()){
         Nominee * nominee (iter.next().value());
-          double temp = ( nominee->m_count / m_entries_token_count)  /
-                ( ( nominee->m_string_count_1.m_count/m_entries_token_count ) *
-                  (nominee->m_string_count_2.m_count / m_entries_token_count )
+        //qDebug() << 100 << nominee->m_string << double(nominee->m_count) / double(m_entries_token_count);
+        double temp = ( double(nominee->m_count) / double(m_entries_token_count) )  /
+                ( ( nominee->m_string_count_1.m_count/double(m_entries_token_count) ) *
+                  (nominee->m_string_count_2.m_count / double(m_entries_token_count) )
                 );
-        nominee->m_weightedMI = -1.0 * nominee->m_count * qLn(temp) ;
+        nominee->m_weightedMI =  nominee->m_count * qLn(temp) ;
+        //qDebug() << 106 << nominee->m_string << nominee->m_count << nominee->m_weightedMI;
         NomineeList.append(nominee);
     }
-    std::sort (*NomineeList.begin(), *NomineeList.end(), myLessThan_2);
+    qDebug() << 108;
+    std::sort (NomineeList.begin(), NomineeList.end(), myLessThan_2);
     m_CurrentCandidates.clear();
     foreach (Nominee * nominee, NomineeList){
         // currently nothing goes into m_DeletionDict !
         if (m_DeletionDict.contains(nominee->m_string)) {
+            delete nominee;
             continue;
         }
         m_CurrentCandidates.append(nominee);
@@ -116,10 +120,12 @@ void Lexicon::generate_candidates2(int how_many){
             break;
         }
     }
-    foreach(Nominee * nominee, NomineeList ){
-        qDebug() << 394 << nominee->m_string << nominee->m_count;
+    foreach(Nominee * nominee, m_CurrentCandidates ){
+        qDebug() << 120 << nominee->m_string << nominee->m_count <<  nominee->m_weightedMI;
         add_entry(string_count(nominee->m_string, nominee->m_count));
+        delete nominee;
     }
+    qDebug() << "--------------------------";
     compute_dict_frequencies();
     return;
 }

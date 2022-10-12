@@ -244,10 +244,8 @@ void Lexicon::parse_corpus(int current_iteration) {
                    iter.next();
                    iter.value()->set_count(0);
            }
-        }
-       //QPair<QStringList*,double > pair;
+        }        
        int lineno = 0;
-       //Parses * word_history;
        foreach (QString line, m_corpus_without_spaces){
            m_wordbreaker->m_main_window->m_progress_bar_1->setValue(lineno);
            parse_return  this_parse_return = parse_word(line);
@@ -257,9 +255,9 @@ void Lexicon::parse_corpus(int current_iteration) {
            foreach (QString entry, this_parse_return.m_parse){
                  m_EntryDict->value(entry)->increment_count(1);
                  m_NumberOfHypothesizedRunningWords += 1;
-            }
-            QList<int> hypothesized_breakpoint_list;
-            convert_stringlist_to_breakpoints(this_parse_return.m_parse, hypothesized_breakpoint_list);
+           }
+           QList<int> hypothesized_breakpoint_list;
+           convert_stringlist_to_breakpoints(this_parse_return.m_parse, hypothesized_breakpoint_list);
 
            QList<int> true_breakpoint_list; // todo make the true_breakpoint list start with zero!
            true_breakpoint_list << 0;
@@ -304,6 +302,7 @@ void Lexicon::PrintParsedCorpus(QString outfile){
 parse_return Lexicon::parse_word(QString word){
    int                  wordlength( word.length() );
    QMap<int, QStringList*>  Parse;
+   QMap<int, QStringList> Parse1;
    QString              Piece, LastChunk;
    QMap<int, double>    BestCompressedLength;
                         BestCompressedLength[0] = 0;
@@ -336,19 +335,23 @@ parse_return Lexicon::parse_word(QString word){
         }
         BestCompressedLength[outerscan] = MinimumCompressedSize;
         if (LastChunkStartingPoint > 0) {
-           Parse[outerscan] =  new QStringList(*Parse[LastChunkStartingPoint]) ;
+           //Parse[outerscan] =  new QStringList(*Parse[LastChunkStartingPoint]) ;
+           Parse1[outerscan] = Parse1[LastChunkStartingPoint];
         } else {
-          Parse[outerscan] = new QStringList();
+          //Parse[outerscan] = new QStringList();
         }
-        Parse[outerscan]->append(LastChunk);
+        //Parse[outerscan]->append(LastChunk);
+        Parse1[outerscan].append(LastChunk);
     }
     bitcost = BestCompressedLength[ wordlength ];
-    parse_return this_parse_return (*Parse[wordlength], bitcost);
-    for (int n = 0; n < wordlength; n++){
-        delete Parse[n];
-    }
+    //parse_return this_parse_return (*Parse[wordlength], bitcost);
+    parse_return this_parse_return1 (Parse1[wordlength], bitcost);
 
-    return this_parse_return;
+    //for (int n = 0; n < wordlength; n++){
+    //    delete Parse[n];
+    //}
+    return this_parse_return1;
+    //return this_parse_return;
 }
 bool myLessThan(const string_count s1, const string_count s2){
     return s1.m_count >  s2.m_count;

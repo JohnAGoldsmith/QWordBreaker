@@ -8,7 +8,7 @@
 #include <QDebug>
 #include "wordHistory.h"
 
-class EntryHistory;
+//class EntryHistory;
 
 class Entry
 {
@@ -39,6 +39,7 @@ public:
     void        write_entry_to_json(QJsonObject & );
     void        read_entry_from_json(QJsonObject &);
     QList<iteration_based_count * > *  get_history() {return & m_history;}
+    void        update_count_history(int current_iteration);
 
 };
 

@@ -92,6 +92,7 @@ public slots:
     void            read_json();
     void            load_entries_model();
     void            begin();
+    void            begin2();
 
 
 public:

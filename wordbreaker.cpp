@@ -7,9 +7,9 @@
 Wordbreaker::Wordbreaker(MainWindow * mainwindow, QObject * parent): QObject(parent)
 {
     m_main_window = mainwindow;
-    m_numberofcycles 		= 20;
+    m_numberofcycles 		= 5;
     mainwindow->m_iteration_spinbox->setValue(m_numberofcycles);
-    m_how_many_candidates_per_iteration 	= 100;
+    m_how_many_candidates_per_iteration 	= 20;
     m_numberoflines 		=  100000;
     m_datadirectory 		= "../../"; //"../Dropbox/data/english-browncorpus/";            // "../../data/english-browncorpus/";
     m_corpus_filename 		= "browncorpus100lines.txt";
@@ -65,7 +65,16 @@ Wordbreaker::Wordbreaker(MainWindow * mainwindow, QObject * parent): QObject(par
 }
 
 void Wordbreaker::begin(){
-    m_lexicon->commence();
+    m_lexicon->commence2();
+
+    m_parsed_corpus_model->emit dataChanged(QModelIndex(), QModelIndex());
+    m_main_window->place_entrydict_on_table_widget(m_lexicon->m_EntryDict);
+    m_entries_model         = new TableModel( &m_lexicon->m_EntryList, this);
+    m_main_window->m_entry_list_tableview->setModel(m_entries_model);
+    write_wordbreaker_to_json("test.json");
+}
+void Wordbreaker::begin2(){
+    m_lexicon->commence2();
 
     m_parsed_corpus_model->emit dataChanged(QModelIndex(), QModelIndex());
     m_main_window->place_entrydict_on_table_widget(m_lexicon->m_EntryDict);

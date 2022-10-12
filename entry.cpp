@@ -21,35 +21,28 @@ void Entry::compress_histories(){
 
 
 }
-/*
-void Entry::place_count_in_history(int iteration){
-    if (iteration > 1){
-        if (m_history.size() >= 1){
-            if (m_history.last()->m_count == m_count){
-                return;
-            }
-        }
+void Entry::update_count_history(int current_iteration){
+    if (m_count == 0){
+        return;
     }
-    iteration_based_count * this_count = new iteration_based_count (iteration, m_count);
-    m_history.append(this_count);
-}
-
-void  Entry::reset_counts(int current_iteration){
-    iteration_based_count * pair;
-    if (m_history.length() > 0 ){
-        int last_count = (*m_history.last()).m_count;
-        if (m_count != last_count){
-            pair = new iteration_based_count(current_iteration-1, m_count);
-            m_history.append(pair);
+    if ( m_history.size() >= 1){
+        int previous_iteration =  m_history.last()->m_final_iteration;
+        int previous_count =      m_history.last()->m_count;
+        if ( previous_iteration == current_iteration - 1 &&
+             previous_count     == m_count ){
+             m_history.last()->m_final_iteration +=1;
+        } else{ // change in parse count on this iteration
+            iteration_based_count * IBC = new iteration_based_count(current_iteration, m_count);
+            m_history.append(IBC);
         }
-    }
-    else{
-        pair = new  iteration_based_count(current_iteration , m_count);
-        m_history.append( pair);
+    } else{
+        // no history to this entry
+        iteration_based_count * IBC = new iteration_based_count (current_iteration, current_iteration, m_count);
+        m_history.append(IBC);
     }
     m_count = 0;
 }
-*/
+
 
 void Entry::display(int iteration_number, QFile outfile){
     iteration_based_count * pair;
