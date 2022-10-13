@@ -86,7 +86,7 @@ void create_nominee_map(QMap<QString, Entry*> * EntryDict, QMap<QString, Nominee
             string_count string_count_2 (entry2->get_key(), entry2->get_count() );
             Nominee * the_nominee = new Nominee(candidate, 1, string_count_1, string_count_2);
             NomineeMap[candidate] = the_nominee;
-            qDebug() << 89 << candidate;
+            //qDebug() << 89 << candidate;
         }
     }
     return;
@@ -101,13 +101,11 @@ void Lexicon::generate_candidates2(int how_many){
     QMapIterator<QString, Nominee*> iter(NomineeMap);
     while(iter.hasNext()){
         Nominee * nominee (iter.next().value());
-        //qDebug() << 100 << nominee->m_string << double(nominee->m_count) / double(m_entries_token_count);
         double temp = ( double(nominee->m_count) / double(m_entries_token_count) )  /
                 ( ( nominee->m_string_count_1.m_count/double(m_entries_token_count) ) *
                   (nominee->m_string_count_2.m_count / double(m_entries_token_count) )
                 );
         nominee->m_weightedMI =  nominee->m_count * qLn(temp) ;
-        //qDebug() << 106 << nominee->m_string << nominee->m_count << nominee->m_weightedMI;
         NomineeList.append(nominee);
     }
     qDebug() << 108;
@@ -126,15 +124,11 @@ void Lexicon::generate_candidates2(int how_many){
     }
     qDebug() << 123;
     foreach(Nominee * nominee, m_CurrentCandidates ){
-        qDebug() << 120 << nominee->m_string << nominee->m_count <<  nominee->m_weightedMI;
-        if (nominee->m_string == " "){
-            int j = 0;
-        }
+        //qDebug() << 120 << nominee->m_string << nominee->m_count <<  nominee->m_weightedMI;
         add_entry(string_count(nominee->m_string, nominee->m_count));
         qDebug() << 133 << nominee->m_string << nominee->m_count;
         delete nominee;
     }
-    qDebug() << "--------------------------";
     compute_dict_frequencies();
     return;
 }

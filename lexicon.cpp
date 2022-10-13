@@ -32,10 +32,9 @@ void Lexicon::commence(){
 
 void Lexicon::copy_entries_to_entrylist(){
     m_EntryList.reserve(m_EntryDict->size());
-    QMapIterator<QString, Entry*>  iter(*m_EntryDict);
-    while ( iter.hasNext() ) {
-        iter.next();
-        string_count * SC  = new string_count( iter.key(), iter.value()->get_count() );
+    QMap<QString, Entry*>::const_iterator iter2;
+    for(iter2 = m_EntryDict->constBegin(); iter2 != m_EntryDict->constEnd(); ++iter2){
+        string_count * SC  = new string_count( iter2.key(), iter2.value()->get_count() );
         m_EntryList.append( SC );
     }
 }
@@ -59,7 +58,6 @@ void Lexicon::FilterZeroCountEntries(int iteration_number){
         QMapIterator<QString, Entry*> iter(*m_EntryDict);
         Entry* entry = m_EntryDict->value(key);
         if (entry->get_count() == 0){
-            //qDebug() << 82 << "iteration" << iteration_number << key << "size" << m_Limbo->count();
             m_Limbo->insert (key, m_EntryDict->value(key));
             if (m_EntryDict->contains(key) &&
                     m_EntryDict->value(key) ) {
@@ -89,7 +87,6 @@ void  Lexicon::add_word_to_True_Dictionary(QString string){
     if (!m_TrueDictionary->contains(string) ){
             Word * p_word = new Word(string, 1);
             add_word(p_word);
-
     }else{
         m_TrueDictionary->value(string)->increment_count(1);
     }
@@ -114,7 +111,7 @@ void Lexicon::ingest_broken_corpus(QString infilename, int numberoflines) {
 
     //---------- analyze each line  --------------------------------------//
     QStringList  line_list;
-    foreach (QString line, *m_wordbreaker->get_corpus_with_spaces() ) { // *get_original_corpus() ) {            //original_raw_corpus) {
+    foreach (QString line, *m_wordbreaker->get_corpus_with_spaces() ) {
         QString line_without_spaces;
         line_without_spaces = analyze_line(line);
 
@@ -144,25 +141,21 @@ void Lexicon::ingest_broken_corpus(QString infilename, int numberoflines) {
 
 void Lexicon::compute_dict_frequencies(){
         m_entries_token_count = 0.0;
-        QMapIterator<QString,Entry*> iter1(*m_EntryDict);
-        while (iter1.hasNext()){
-            m_entries_token_count += iter1.next().value()->get_count();
+        QMap<QString,Entry*>::ConstIterator iter1;
+        for(iter1=m_EntryDict->constBegin(); iter1 !=m_EntryDict->constEnd(); ++iter1){
+           m_entries_token_count += iter1.value()->get_count();
         }
-        QMapIterator<QString,Entry*> iter2(*m_EntryDict);
-        while(iter2.hasNext()){
-            iter2.next();
-            qDebug() << 153 << iter2.value()->get_key() <<  iter2.value()->get_count();
+        QMap<QString,Entry*>::ConstIterator iter2;
+        for(iter2=m_EntryDict->constBegin(); iter2 !=m_EntryDict->constEnd(); ++iter2){
             iter2.value()->set_frequency(iter2.value()->get_count() / m_entries_token_count );
         }
         double TotalCount = 0.0;
-        qDebug() << 157;
-        QMapIterator<QString, double> iter3(m_LetterDict);
-        while (iter3.hasNext()){
-            TotalCount += iter3.next().value();
+        QMap<QString,double>::ConstIterator iter3;
+        for (iter3=m_LetterDict.constBegin(); iter3 != m_LetterDict.constEnd(); ++iter3){
+            TotalCount += iter3.value();
         }
-        QMapIterator<QString, double> iter4(m_LetterDict);
-        while (iter4.hasNext()){
-            iter4.next();
+        QMap<QString,double>::ConstIterator iter4;
+        for (iter4=m_LetterDict.constBegin(); iter4 != m_LetterDict.constEnd(); ++iter4){
             m_LetterDict[iter4.key()] /= TotalCount;
             m_LetterPlog[iter4.key()] = -1.0 * log(m_LetterDict[iter4.key()]);
         }
@@ -177,10 +170,10 @@ double Lexicon::from_string_to_bits(QString string){
 }
 void Lexicon::compute_dictionary_length(){
         double DictionaryLength = 0.0;
-        QMapIterator<QString, Entry*> iter(*m_EntryDict);
-        while(iter.hasNext()){
-            if (iter.next().value()->get_count() == 0){ continue; }
-            DictionaryLength += from_string_to_bits(iter.key());
+        QMap<QString, Entry*>::const_iterator iter1;
+        for (iter1 = m_EntryDict->constBegin(); iter1 != m_EntryDict->constEnd(); ++iter1){
+            if (iter1.value()->get_count() == 0){ continue; }
+            DictionaryLength += from_string_to_bits(iter1.key());
         }
         m_DictionaryLength = DictionaryLength;
         m_DictionaryLengthHistory.append(DictionaryLength);

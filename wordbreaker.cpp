@@ -7,7 +7,7 @@
 Wordbreaker::Wordbreaker(MainWindow * mainwindow, QObject * parent): QObject(parent)
 {
     m_main_window = mainwindow;
-    m_numberofcycles 		= 15;
+    m_numberofcycles 		= 5;
     mainwindow->m_iteration_spinbox->setValue(m_numberofcycles);
     m_how_many_candidates_per_iteration 	= 20;
     m_numberoflines 		=  100000;
